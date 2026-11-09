@@ -323,6 +323,7 @@ namespace AzulGroove
                 App.LogError("Startup", ex);
                 try { Toast("Erro ao iniciar: " + ex.Message); } catch { }
             }
+            if (prefs.AutoUpdate) _ = UpdateAutoCheckAsync();   // procura versão nova nos Releases do GitHub
         }
 
         async Task StartupAsync()
@@ -358,7 +359,7 @@ namespace AzulGroove
                 bars[i] = new Rectangle { Width = 9, Height = 6, RadiusX = 4.5, RadiusY = 4.5, Margin = new Thickness(3, 0, 3, 0), VerticalAlignment = VerticalAlignment.Bottom, Fill = (Brush)FindResource("GradV") };
                 Bars.Children.Add(bars[i]);
             }
-            radios = new[] { NavHome, NavMusic, NavVideo, NavQueue, NavNow, NavPlaylists, NavYouTube, NavArtists, NavAlbums, NavSettings };
+            radios = new[] { NavHome, NavMusic, NavVideo, NavQueue, NavNow, NavPlaylists, NavYouTube, NavArtists, NavAlbums, NavSettings, NavAbout };
             timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
             timer.Tick += Tick; // só liga enquanto toca (SyncTimer)
             Cards.ItemsSource = cardRows;
@@ -379,7 +380,8 @@ namespace AzulGroove
             // O motor de mídia (VLC) começa a carregar já, em paralelo com a biblioteca (antes esperava a biblioteca inteira)
             var vlcTask = Task.Run(() =>
             {
-                VLC.Core.Initialize();
+                string vlcDir = ResolveLibVlcDir();   // pasta libvlc ao lado do EXE, ou o VLC embutido no EXE único
+                if (vlcDir != null) VLC.Core.Initialize(vlcDir); else VLC.Core.Initialize();
                 var vlcOptions = new List<string> { "--no-video-title-show", "--no-osd", "--no-snapshot-preview", "--no-stats", App.SafeMode ? "--avcodec-hw=none" : "--avcodec-hw=any", "--file-caching=400" };
                 if (prefs.LevelVolume) vlcOptions.AddRange(new[] { "--audio-filter=normvol", "--norm-buff-size=20", "--norm-max-level=2.0" });   // nivela o volume entre músicas
                 var engine = new VLC.LibVLC(vlcOptions.ToArray());

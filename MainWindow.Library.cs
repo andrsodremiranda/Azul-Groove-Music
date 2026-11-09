@@ -245,7 +245,7 @@ namespace AzulGroove
             if (page == 3) { RefreshQueue(); return; }
             if (page == 5) { RefreshPlaylistTracks(); return; }
             if (page == 7 || page == 8) { RefreshGroups(); return; }
-            if (page == 6 || page == 9) return;
+            if (page == 6 || page == 9 || page == 10) return;
             int generation = Interlocked.Increment(ref refreshGeneration);
             int currentPage = page;
             string query = Search.Text.Trim();
@@ -325,8 +325,9 @@ namespace AzulGroove
             PlaylistView.Visibility = p == 5 && !pv ? Visibility.Visible : Visibility.Collapsed;
             YtView.Visibility = p == 6 && !pv ? Visibility.Visible : Visibility.Collapsed;
             SettingsView.Visibility = p == 9 && !pv ? Visibility.Visible : Visibility.Collapsed;
+            AboutView.Visibility = p == 10 && !pv ? Visibility.Visible : Visibility.Collapsed;
             GroupView.Visibility = groups && !pv ? Visibility.Visible : Visibility.Collapsed;
-            LibView.Visibility = pv || p == 3 || p == 5 || p == 6 || p == 9 || groups ? Visibility.Collapsed : Visibility.Visible;
+            LibView.Visibility = pv || p == 3 || p == 5 || p == 6 || p == 9 || p == 10 || groups ? Visibility.Collapsed : Visibility.Visible;
             int navIndex = keepGroup && groupName != null ? (groupKind == 1 ? 7 : 8) : p;   // dentro de um artista/álbum, o menu continua nele
             navSet = true; radios[navIndex].IsChecked = true; navSet = false;
             if (p == 3) RefreshQueue();
@@ -339,11 +340,13 @@ namespace AzulGroove
             }
             else if (p == 6) { }
             else if (p == 9) RefreshSettingsView();
+            else if (p == 10) RefreshAboutView();
             else if (groups) RefreshGroups();
             else if (!pv) Refresh();
             UpdateViz();
             if (pv) return; // a página do vídeo não é animada: evita falhas gráficas com a janela nativa
             if (p == 9) Anim(SettingsView, OpacityProperty, 0, 1, 260);
+            if (p == 10) Anim(AboutView, OpacityProperty, 0, 1, 260);
             Anim(Head, OpacityProperty, 0, 1, 260);
             Anim(LibShift, TranslateTransform.YProperty, 18, 0, 320);
         }
@@ -354,7 +357,7 @@ namespace AzulGroove
         {
             Ph.Visibility = Search.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
             if (!IsLoaded) return;
-            if (page >= 3 && page <= 9) { if (Search.Text.Trim().Length > 0) Navigate(1); }
+            if (page >= 3 && page <= 10) { if (Search.Text.Trim().Length > 0) Navigate(1); }
             else { searchTimer.Stop(); searchTimer.Start(); }
             YtSearchSchedule();
         }
@@ -404,7 +407,7 @@ namespace AzulGroove
         {
             if (SortBox == null) return;
             sortMode = Math.Max(0, SortBox.SelectedIndex);
-            if (IsLoaded && page != 0 && page != 3 && page != 4 && page != 5 && page != 6 && page != 7 && page != 8 && page != 9) Refresh();
+            if (IsLoaded && page != 0 && page != 3 && page != 4 && page != 5 && page != 6 && page != 7 && page != 8 && page != 9 && page != 10) Refresh();
         }
 
         void LoadPlaylists()

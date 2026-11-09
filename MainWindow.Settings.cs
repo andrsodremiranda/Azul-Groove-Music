@@ -27,6 +27,8 @@ namespace AzulGroove
         public bool SmartQueue { get; set; } = true;       // fila inteligente: a cada troca de música a fila se completa sozinha pelo seu gosto
         public int SmartAhead { get; set; } = 2;           // quantas músicas à frente a fila inteligente mantém
         public bool SmartDownload { get; set; } = true;    // a fila inteligente também baixa músicas novas do YouTube pelo seu gosto (usa a internet)
+        public bool AutoUpdate { get; set; } = true;       // ao abrir o app, procura versão nova nos Releases do GitHub
+        public string UpdateSkipped { get; set; } = "";    // versão para a qual você respondeu "Não" (não pergunta de novo sozinho)
         public bool AutoQueueNew { get; set; } = true;     // músicas novas (download do YouTube / pasta da biblioteca) entram sozinhas na fila
 
         static readonly string PrefsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AzulGroove", "prefs.json");
@@ -116,8 +118,6 @@ namespace AzulGroove
             PrefYtSearch.IsChecked = prefs.YtSearch;
             PrefYtFolderTxt.Text = "Downloads do YouTube: " + ytFolder;
             PrefStartup.IsChecked = GetAutoStart();
-            var v = Assembly.GetExecutingAssembly().GetName().Version;
-            AboutTxt.Text = "Azul Groove Music · versão " + (v != null ? v.ToString(3) : "?");
         }
 
         // Liga/desliga as animações de fundo na hora, respeitando a página e o estado da janela
@@ -286,7 +286,7 @@ namespace AzulGroove
 
         void PrefReset_Click(object s, RoutedEventArgs e)
         {
-            prefs.Animations = true; prefs.MinimizeToTray = true; prefs.ResumePlayback = true; prefs.YtSearch = false; prefs.GlobalMediaKeys = true; prefs.LevelVolume = false; prefs.LightMode = false; prefs.AutoQueueNew = true; prefs.SmartQueue = true; prefs.SmartAhead = 2; prefs.SmartDownload = true;
+            prefs.Animations = true; prefs.MinimizeToTray = true; prefs.ResumePlayback = true; prefs.YtSearch = false; prefs.GlobalMediaKeys = true; prefs.LevelVolume = false; prefs.LightMode = false; prefs.AutoQueueNew = true; prefs.SmartQueue = true; prefs.SmartAhead = 2; prefs.SmartDownload = true; prefs.AutoUpdate = true; prefs.UpdateSkipped = "";
             prefs.Save();
             SetAutoStart(false);
             RefreshSettingsView();

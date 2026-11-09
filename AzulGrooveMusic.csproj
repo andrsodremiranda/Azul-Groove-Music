@@ -19,9 +19,9 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <DebugType>none</DebugType>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <Product>Azul Groove Music</Product>
-    <Company>Azul Groove</Company>
+    <Company>ASTM Software</Company>
     <ServerGarbageCollector>false</ServerGarbageCollector>
     <TieredCompilation>true</TieredCompilation>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
@@ -29,6 +29,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />
+    <EmbeddedResource Include="LICENSE.txt" LogicalName="LICENSE.txt" />
+    <EmbeddedResource Include="libvlc.zip" LogicalName="libvlc.zip" Condition="'$(EmbedLibVlc)'=='true' And Exists('libvlc.zip')" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LibVLCSharp" Version="3.8.5" />

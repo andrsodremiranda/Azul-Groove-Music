@@ -1,10 +1,11 @@
 ; Instalador do Azul Groove Music  -  compile com o Inno Setup 6 (ou rode o build.bat, que faz tudo)
 #define MyAppName "Azul Groove Music"
-#define MyAppVersion "1.0.3"
-#define MyAppPublisher "Azul Groove"
+#define MyAppVersion "1.0.4"
+#define MyAppPublisher "ASTM Software"
 #define MyAppExeName "AzulGrooveMusic.exe"
 
 [Setup]
+LicenseFile=LICENSE.txt
 AppId={{7B1E5C3A-92D4-4F6B-8A1D-3C5E9F2B6A40}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}

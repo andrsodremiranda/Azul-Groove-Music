@@ -2,7 +2,7 @@
 
 Player de música e vídeo para Windows, feito em C# (WPF) com visual azul, **fila inteligente** que aprende com o seu uso e integração com o YouTube / YouTube Music.
 
-> Versão atual: **1.0.3**
+> Versão atual: **1.0.4**
 
 ---
 
@@ -46,9 +46,17 @@ Dá para ligar/desligar a música automática em **Configurações** ou pelo bot
 
 Pegue a versão mais recente na aba **Releases**:
 - **Instalador:** `AzulGrooveMusic-Setup-x.y.z.exe`
-- **Portátil:** `AzulGrooveMusic-Portatil-x.y.z.zip` (extraia e abra `AzulGrooveMusic.exe`)
+- **Portátil:** `AzulGrooveMusic-Portatil-x.y.z.exe` (um único arquivo, sem DLLs nem pastas; na primeira vez ele prepara o player e demora um pouco mais)
 
 Requisitos: Windows 10/11 64 bits. O .NET já vem incluso no app.
+
+## 🔄 Atualizações
+
+Ao abrir, o app consulta os [Releases](https://github.com/andrsodremiranda/Azul-Groove-Music/releases) deste repositório. Se houver uma versão mais nova, ele oferece baixar e instalar.
+
+- Ele procura sempre o arquivo `AzulGrooveMusic-Setup*.exe` anexado ao release (por exemplo, `AzulGrooveMusic-Setup-1.0.4.exe`). Use a tag `v1.0.4` no release.
+- Dá para desligar em **Sobre → Atualizações → Buscar atualizações ao abrir**, ou buscar manualmente pelo botão "Buscar atualizações agora" (menu lateral **Sobre**, que também mostra a versão, os componentes, os créditos e a licença de uso).
+- O download só é aceito se vier deste repositório, e o app confere o hash SHA-256 quando o GitHub o informa.
 
 ## 🛠️ Compilar
 
@@ -60,7 +68,7 @@ build.bat
 
 O script gera:
 - `publish\AzulGrooveMusic.exe` (para testar)
-- `installer\AzulGrooveMusic-Portatil-x.y.z.zip` (versão portátil)
+- `installer\AzulGrooveMusic-Portatil-x.y.z.exe` (versão portátil, um único EXE)
 - `installer\AzulGrooveMusic-Setup-x.y.z.exe` (instalador, se o Inno Setup estiver instalado)
 
 Ou direto pelo .NET:
@@ -79,6 +87,7 @@ dotnet publish -c Release -r win-x64 --self-contained true -o publish
 | `MainWindow.Collections.cs` | Coleções salvas e histórico |
 | `MainWindow.Extras.cs` | Contagem de reproduções e playlists automáticas |
 | `MainWindow.SmartQueue.cs` | **Fila inteligente** e download de músicas novas |
+| `MainWindow.Update.cs` | Verificação e instalação de atualizações (GitHub Releases) |
 | `MainWindow.YouTube.cs` / `YtSearch.cs` | Integração com YouTube (yt-dlp) e busca |
 | `MainWindow.Settings.cs` | Configurações do usuário |
 | `MainWindow.Tray.cs` | Bandeja do sistema e notificações |
@@ -91,6 +100,20 @@ dotnet publish -c Release -r win-x64 --self-contained true -o publish
 - Configurações, contagens de reprodução e aprendizado da fila: `%AppData%\AzulGroove`
 - Log de erros: `%AppData%\AzulGroove\logs\azulgroove.log`
 - Músicas baixadas do YouTube (padrão): `Música\Azul Groove YouTube`
+
+## 🙏 Créditos
+
+| Componente | Uso |
+|---|---|
+| [VLC / LibVLC](https://www.videolan.org/vlc/) e [LibVLCSharp](https://github.com/videolan/libvlcsharp) (VideoLAN) | Motor de áudio e vídeo |
+| [TagLibSharp](https://github.com/mono/taglib-sharp) | Leitura de tags e capas |
+| [NAudio](https://github.com/naudio/NAudio) | Áudio no Windows |
+| [yt-dlp](https://github.com/yt-dlp/yt-dlp) | Downloads do YouTube |
+| [FFmpeg](https://ffmpeg.org/) | Conversão para MP3 |
+| [.NET e WPF](https://dotnet.microsoft.com/) (Microsoft) | Plataforma e interface |
+| Segoe MDL2 Assets (Microsoft) | Ícones |
+
+Cada componente segue a licença de seus autores. O Azul Groove Music não é afiliado ao YouTube, Google ou VideoLAN.
 
 ## 🧩 Tecnologias
 
@@ -106,6 +129,6 @@ Baixe apenas conteúdo que você tem direito de baixar e respeite os termos de u
 
 ## 📄 Licença
 
-© 2026 **ASTM Software**. Todos os direitos reservados.
+**© 2026 ASTM Software. Todos os direitos reservados.**
 
 O Azul Groove Music é gratuito para uso pessoal e não comercial, conforme a [Licença de Uso](LICENSE.txt). Não é permitido vender, modificar ou redistribuir versões alteradas sem autorização. Os componentes de terceiros seguem suas próprias licenças.

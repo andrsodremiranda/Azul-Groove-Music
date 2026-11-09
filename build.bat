@@ -22,11 +22,22 @@ if errorlevel 1 (
 if not exist "publish\AzulGrooveMusic.exe" (echo O EXE nao foi gerado & pause & exit /b 1)
 if not exist "publish\libvlc" echo AVISO: a pasta publish\libvlc nao foi criada - o app nao vai tocar sem ela.
 
-echo [3/3] Gerando a versao portatil (ZIP)...
+echo [3/3] Gerando a versao portatil (EXE unico, com o VLC dentro)...
+if exist publish-portable rmdir /s /q publish-portable
+if exist libvlc.zip del libvlc.zip
 if not exist installer mkdir installer
-if exist "installer\AzulGrooveMusic-Portatil-1.0.3.zip" del "installer\AzulGrooveMusic-Portatil-1.0.3.zip"
-powershell -NoProfile -Command "Compress-Archive -Path 'publish\*' -DestinationPath 'installer\AzulGrooveMusic-Portatil-1.0.3.zip' -Force"
-if errorlevel 1 (echo AVISO: nao foi possivel gerar o ZIP portatil) else (echo Portatil: installer\AzulGrooveMusic-Portatil-1.0.3.zip)
+if not exist "publish\libvlc\win-x64" goto noportable
+powershell -NoProfile -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; [IO.Compression.ZipFile]::CreateFromDirectory('publish\libvlc\win-x64','libvlc.zip',[IO.Compression.CompressionLevel]::Optimal,$false)"
+if errorlevel 1 goto noportable
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=false -p:EmbedLibVlc=true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish-portable
+if errorlevel 1 goto noportable
+copy /y "publish-portable\AzulGrooveMusic.exe" "installer\AzulGrooveMusic-Portatil-1.0.4.exe" >nul
+echo Portatil: installer\AzulGrooveMusic-Portatil-1.0.4.exe
+goto portabledone
+:noportable
+echo AVISO: nao foi possivel gerar o EXE portatil
+:portabledone
+if exist libvlc.zip del libvlc.zip
 
 echo Gerando o instalador (Inno Setup)...
 set "ISCC="
@@ -46,7 +57,7 @@ if errorlevel 1 (echo Falha ao gerar o instalador & pause & exit /b 1)
 echo.
 echo Pronto!
 echo   EXE para testar : publish\AzulGrooveMusic.exe
-echo   Portatil (ZIP)  : installer\AzulGrooveMusic-Portatil-1.0.3.zip
-echo   Instalador      : installer\AzulGrooveMusic-Setup-1.0.3.exe
+echo   Portatil (EXE)  : installer\AzulGrooveMusic-Portatil-1.0.4.exe
+echo   Instalador      : installer\AzulGrooveMusic-Setup-1.0.4.exe
 explorer installer
 pause
