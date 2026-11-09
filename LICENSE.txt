@@ -57,5 +57,5 @@ Esta licença vigora enquanto o Usuário cumprir estes termos. Em caso de descum
 
 13. CONTATO
 ASTM Software
-E-mail: [SEU E-MAIL DE CONTATO]
-Site: [SEU SITE OU GITHUB]
+E-mail: corporationastm@gmail.com
+Site: https://azul-groove.vercel.app/
