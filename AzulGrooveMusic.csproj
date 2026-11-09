@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>AzulGrooveMusic</AssemblyName>
+    <RootNamespace>AzulGroove</RootNamespace>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <TieredPGO>false</TieredPGO>
+    <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <!-- O WPF precisa dos idiomas do sistema (en-us etc.). Com "true" o texto não é desenhado e a tela trava. -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <DebugType>none</DebugType>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Version>1.0.3</Version>
+    <Product>Azul Groove Music</Product>
+    <Company>Azul Groove</Company>
+    <ServerGarbageCollector>false</ServerGarbageCollector>
+    <TieredCompilation>true</TieredCompilation>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LibVLCSharp" Version="3.8.5" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+</Project>

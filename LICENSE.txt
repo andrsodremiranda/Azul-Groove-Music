@@ -1,0 +1,61 @@
+﻿LICENÇA DE USO DE SOFTWARE (EULA)
+Azul Groove Music — versão 1.0.3
+Copyright (c) 2026 ASTM Software. Todos os direitos reservados.
+
+LEIA COM ATENÇÃO. Ao instalar, copiar ou usar o Azul Groove Music ("Software"), você ("Usuário") concorda com os termos abaixo. Se não concordar, não instale nem use o Software.
+
+
+1. LICENÇA CONCEDIDA
+A ASTM Software ("Titular") concede ao Usuário uma licença pessoal, gratuita, não exclusiva, intransferível e revogável para instalar e usar o Software em seus próprios dispositivos, para fins pessoais e não comerciais.
+
+2. O QUE É PERMITIDO
+2.1. Instalar e usar o Software em quantos dispositivos pessoais quiser.
+2.2. Fazer cópias de segurança do instalador ou da versão portátil.
+2.3. Compartilhar o instalador ou a versão portátil, sem alterações e sem cobrar por isso, indicando a ASTM Software como autora.
+
+3. O QUE NÃO É PERMITIDO
+Sem autorização prévia e por escrito do Titular, é proibido:
+a) vender, alugar, sublicenciar ou cobrar de qualquer forma pelo Software;
+b) modificar, traduzir ou criar obras derivadas do Software ou de seu código-fonte, quando este for disponibilizado;
+c) fazer engenharia reversa, descompilar ou desmontar o Software, exceto na medida em que a lei permitir expressamente;
+d) remover ou alterar avisos de direitos autorais, nome ou marca da ASTM Software;
+e) distribuir versões alteradas do Software como se fossem o original ou sob outro nome;
+f) usar o Software para violar leis, direitos autorais ou direitos de terceiros.
+
+4. PROPRIEDADE INTELECTUAL
+O Software, seu nome, ícone, interface e demais elementos são protegidos pela legislação de direitos autorais (Lei nº 9.609/1998 e Lei nº 9.610/1998) e por tratados internacionais. Esta licença não transfere ao Usuário nenhum direito de propriedade sobre o Software; apenas o direito de uso descrito aqui.
+
+5. COMPONENTES DE TERCEIROS
+O Software utiliza componentes de terceiros, cada um sob sua própria licença, entre eles: VLC / LibVLC e LibVLCSharp (VideoLAN), TagLibSharp, NAudio, yt-dlp e FFmpeg. Esses componentes continuam sujeitos às licenças de seus respectivos autores, que prevalecem sobre estes termos no que se referir a eles. Esta licença não altera os direitos que o Usuário já tem sobre eles.
+
+6. YOUTUBE E CONTEÚDO DE TERCEIROS
+6.1. O Software pode buscar, sincronizar e baixar conteúdo do YouTube e do YouTube Music usando ferramentas de terceiros. O Software não é afiliado, patrocinado nem endossado pelo YouTube, Google ou VideoLAN.
+6.2. O Usuário é o único responsável pelo conteúdo que baixa, reproduz ou armazena, e deve respeitar os direitos autorais, as leis aplicáveis e os termos de uso dos serviços acessados. Baixe apenas o que você tem direito de baixar.
+6.3. A função "Fila inteligente" e o download automático de músicas sugeridas podem usar a internet e ocupar espaço em disco. O Usuário pode desligá-los a qualquer momento nas Configurações.
+
+7. PRIVACIDADE E DADOS
+7.1. O Software não envia seus dados pessoais, hábitos de uso ou histórico de reprodução à ASTM Software. Configurações, contagem de reproduções e o aprendizado da fila inteligente ficam armazenados apenas no seu computador (pasta %AppData%\AzulGroove).
+7.2. Ao usar as funções do YouTube, seu computador se conecta a servidores de terceiros, que têm suas próprias políticas de privacidade.
+7.3. O arquivo de registro de erros (azulgroove.log) fica no seu computador e só é compartilhado se você o enviar voluntariamente.
+
+8. ATUALIZAÇÕES
+O Titular pode, a seu critério, lançar atualizações, alterar ou descontinuar funções do Software, sem obrigação de suporte ou manutenção.
+
+9. ISENÇÃO DE GARANTIA
+O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIAS DE QUALQUER TIPO, EXPRESSAS OU IMPLÍCITAS, INCLUINDO ADEQUAÇÃO A UM FIM ESPECÍFICO, AUSÊNCIA DE ERROS OU FUNCIONAMENTO ININTERRUPTO. As funções que dependem do YouTube podem deixar de funcionar a qualquer momento por mudanças feitas por terceiros.
+
+10. LIMITAÇÃO DE RESPONSABILIDADE
+Na máxima extensão permitida pela lei, a ASTM Software não responde por danos diretos, indiretos, perda de dados, arquivos ou lucros decorrentes do uso ou da impossibilidade de uso do Software, nem por uso do Software em desacordo com a lei ou com estes termos. Nada nesta licença exclui direitos do consumidor que não possam ser excluídos por lei.
+
+11. VIGÊNCIA E RESCISÃO
+Esta licença vigora enquanto o Usuário cumprir estes termos. Em caso de descumprimento, ela termina automaticamente, e o Usuário deve parar de usar o Software e apagar todas as cópias. O Usuário pode encerrar a licença a qualquer momento desinstalando o Software.
+
+12. DISPOSIÇÕES GERAIS
+12.1. Se alguma cláusula for considerada inválida, as demais continuam em vigor.
+12.2. Estes termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro do domicílio do Usuário consumidor ou, para os demais casos, o foro da comarca de [CIDADE/UF DA ASTM SOFTWARE], com exclusão de qualquer outro.
+12.3. A ASTM Software pode atualizar estes termos em novas versões do Software.
+
+13. CONTATO
+ASTM Software
+E-mail: [SEU E-MAIL DE CONTATO]
+Site: [SEU SITE OU GITHUB]
