@@ -52,7 +52,7 @@ Esta licença vigora enquanto o Usuário cumprir estes termos. Em caso de descum
 
 12. DISPOSIÇÕES GERAIS
 12.1. Se alguma cláusula for considerada inválida, as demais continuam em vigor.
-12.2. Estes termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro do domicílio do Usuário consumidor ou, para os demais casos, o foro da comarca de [CIDADE/UF DA ASTM SOFTWARE], com exclusão de qualquer outro.
+12.2. Estes termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro do domicílio do Usuário consumidor ou, para os demais casos, o foro da comarca de são paulo com exclusão de qualquer outro.
 12.3. A ASTM Software pode atualizar estes termos em novas versões do Software.
 
 13. CONTATO
