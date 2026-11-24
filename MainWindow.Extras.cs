@@ -113,6 +113,7 @@ namespace AzulGroove
                     .Where(i => !i.IsVideo && !(plays.TryGetValue(i.FilePath, out PlayStat st) && st.Count > 0))
                     .OrderByDescending(i => i.FileDate)
                     .Take(50).Select(i => i.FilePath).ToList();
+                UpsertSmart("fav", "♥ Favoritas", FavoritePaths(), 0, true);
                 UpsertSmart("top", "★ Mais tocadas", top, 0);
                 UpsertSmart("played", "★ Tocadas recentemente", lastPlayed, 1);
                 UpsertSmart("recent", "★ Adicionadas recentemente", recentAdded, 2);
@@ -136,9 +137,10 @@ namespace AzulGroove
             if (pl == null)
             {
                 if (files.Count == 0 && !allowEmpty) return;
-                AddPlaylistSorted(new SavedPlaylist { Name = name, Auto = true, Smart = kind, Files = files });   // as ★ ficam por último
+                AddPlaylistSorted(new SavedPlaylist { Name = T.Get(name), Auto = true, Smart = kind, Files = files });   // as ★ ficam por último
                 return;
             }
+            if (pl.Name != T.Get(name)) pl.Name = T.Get(name);
             if (pl.Files != null && pl.Files.SequenceEqual(files, StringComparer.OrdinalIgnoreCase)) return;
             pl.Files = files;
             if (page == 5 && ReferenceEquals(PlaylistList.SelectedItem, pl)) RefreshPlaylistTracks();
@@ -153,7 +155,7 @@ namespace AzulGroove
             if (pl == null) { Toast("Selecione uma playlist para exportar"); return; }
             List<string> files = (pl.Files ?? new List<string>()).Where(File.Exists).ToList();
             if (files.Count == 0) { Toast("Esta playlist não tem arquivos para exportar"); return; }
-            string safe = string.Concat(pl.Name.Select(c => System.IO.Path.GetInvalidFileNameChars().Contains(c) ? '_' : c)).Trim('★', ' ');
+            string safe = string.Concat(pl.Name.Select(c => System.IO.Path.GetInvalidFileNameChars().Contains(c) ? '_' : c)).Trim('★', '♥', ' ');
             var dialog = new Microsoft.Win32.SaveFileDialog
             {
                 Title = "Exportar playlist",
@@ -213,53 +215,51 @@ namespace AzulGroove
                 return;
             }
 
-            var dialog = new Window
+            var layout = new StackPanel { Margin = new Thickness(30, 8, 30, 26) };
+            layout.Children.Add(new TextBlock { Text = "Editar informações", FontSize = 22, FontWeight = FontWeights.SemiBold });
+            layout.Children.Add(new TextBlock
             {
-                Title = "Editar informações",
-                Owner = this,
-                Width = 420,
-                SizeToContent = SizeToContent.Height,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                ResizeMode = ResizeMode.NoResize,
-                WindowStyle = WindowStyle.ToolWindow,
-                Background = (System.Windows.Media.Brush)FindResource("Abyss"),
-                Foreground = (System.Windows.Media.Brush)FindResource("Foam")
-            };
-            var layout = new StackPanel { Margin = new Thickness(18) };
+                Text = System.IO.Path.GetFileName(it.FilePath), FontSize = 12.5, Foreground = (System.Windows.Media.Brush)FindResource("Mute"),
+                TextTrimming = TextTrimming.CharacterEllipsis, Margin = new Thickness(0, 3, 0, 6)
+            });
             TextBox Row(string label, string value)
             {
-                layout.Children.Add(new TextBlock { Text = label, Margin = new Thickness(0, 8, 0, 4) });
-                var box = new TextBox { Padding = new Thickness(7), Text = value };
+                layout.Children.Add(BrandedLabel(label));
+                var box = BrandedTextBox(value);
                 layout.Children.Add(box);
                 return box;
             }
             TextBox tTitle = Row("Título", title), tArtist = Row("Artista", artist), tAlbum = Row("Álbum", album), tGenre = Row("Gênero", genre), tYear = Row("Ano", year);
 
             string coverPath = null;
-            var coverInfo = new TextBlock { Text = "Capa: manter a atual", Margin = new Thickness(0, 12, 0, 4), TextTrimming = TextTrimming.CharacterEllipsis };
+            var coverInfo = new TextBlock { Text = "Capa: manter a atual", FontSize = 12.5, Foreground = (System.Windows.Media.Brush)FindResource("Mute"), Margin = new Thickness(2, 16, 0, 8), TextTrimming = TextTrimming.CharacterEllipsis };
             layout.Children.Add(coverInfo);
             var coverRow = new StackPanel { Orientation = Orientation.Horizontal };
-            var pick = new Button { Content = "Escolher imagem…", Padding = new Thickness(10, 4, 10, 4), Margin = new Thickness(0, 0, 10, 0) };
-            var remove = new CheckBox { Content = "Remover capa", VerticalAlignment = VerticalAlignment.Center, Foreground = dialog.Foreground };
+            var pick = BrandedButton("Escolher imagem…", false, false);
+            pick.Padding = new Thickness(16, 8, 16, 8); pick.Margin = new Thickness(0, 0, 16, 0);
+            var remove = BrandedCheckBox("Remover capa");
+            Window dialog = null;
             pick.Click += (a, b) =>
             {
                 var open = new Microsoft.Win32.OpenFileDialog { Title = "Escolher capa", Filter = "Imagens (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png" };
                 if (open.ShowDialog(dialog) != true) return;
                 coverPath = open.FileName; remove.IsChecked = false;
-                coverInfo.Text = "Capa nova: " + System.IO.Path.GetFileName(coverPath);
+                coverInfo.Text = T.Get("Capa nova: {0}", System.IO.Path.GetFileName(coverPath));
             };
-            remove.Checked += (a, b) => { coverPath = null; coverInfo.Text = "Capa: será removida"; };
-            remove.Unchecked += (a, b) => { if (coverPath == null) coverInfo.Text = "Capa: manter a atual"; };
+            remove.Checked += (a, b) => { coverPath = null; coverInfo.Text = T.Get("Capa: será removida"); };
+            remove.Unchecked += (a, b) => { if (coverPath == null) coverInfo.Text = T.Get("Capa: manter a atual"); };
             coverRow.Children.Add(pick); coverRow.Children.Add(remove);
             layout.Children.Add(coverRow);
 
-            var actions = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 16, 0, 0) };
-            var save = new Button { Content = "Salvar", IsDefault = true, MinWidth = 76, Margin = new Thickness(0, 0, 8, 0) };
+            var actions = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 26, 0, 0) };
+            var cancelBtn = BrandedButton("Cancelar", false, false); cancelBtn.IsCancel = true; cancelBtn.Margin = new Thickness(0, 0, 10, 0);
+            var save = BrandedButton("Salvar", true, false); save.IsDefault = true;
             save.Click += (a, b) => dialog.DialogResult = true;
-            actions.Children.Add(save);
-            actions.Children.Add(new Button { Content = "Cancelar", IsCancel = true, MinWidth = 76 });
+            actions.Children.Add(cancelBtn); actions.Children.Add(save);
             layout.Children.Add(actions);
-            dialog.Content = layout;
+
+            dialog = NewBrandedWindow(460, layout, out Button dialogX);
+            dialog.Title = "Editar informações";
             dialog.Loaded += (a, b) => { tTitle.Focus(); tTitle.SelectAll(); };
             if (dialog.ShowDialog() != true) return;
 

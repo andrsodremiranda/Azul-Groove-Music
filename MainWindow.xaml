@@ -18,6 +18,9 @@
       <MenuItem Header="Adicionar à playlist" SubmenuOpened="AddToPlaylistMenu_Opened"><MenuItem Header="…"/></MenuItem>
       <MenuItem Header="Mostrar na pasta" Click="Reveal_Click"/>
       <MenuItem Header="Editar informações…" Click="EditTags_Click"/>
+      <MenuItem Header="♥ Favoritar / desfavoritar" Click="FavMenu_Click"/>
+      <MenuItem Header="Não sugerir esta música na fila inteligente" Click="BlockTrack_Click"/>
+      <MenuItem Header="Não sugerir este artista na fila inteligente" Click="BlockArtist_Click"/>
       <Separator/>
       <MenuItem Header="Remover da biblioteca" Click="Remove_Click"/>
     </ContextMenu>
@@ -40,8 +43,8 @@
             <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Padding="9,3" CornerRadius="8" Background="#E6051433">
               <TextBlock Text="{Binding Kind}" FontSize="11.5" Foreground="White"/>
             </Border>
-            <Border x:Name="Ring" CornerRadius="16" BorderBrush="{StaticResource Cyan}" BorderThickness="2.5" Visibility="Collapsed"/>
-            <Border x:Name="Badge" Width="34" Height="34" CornerRadius="17" Background="{StaticResource Grad}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Visibility="Collapsed">
+            <Border x:Name="Ring" CornerRadius="16" BorderBrush="{DynamicResource Cyan}" BorderThickness="2.5" Visibility="Collapsed"/>
+            <Border x:Name="Badge" Width="34" Height="34" CornerRadius="17" Background="{DynamicResource Grad}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Visibility="Collapsed">
               <TextBlock Text="&#xE767;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
           </Grid>
@@ -132,7 +135,7 @@
             <Border Margin="16,10,16,14" CornerRadius="12" Background="#14FFFFFF" BorderBrush="#26FFFFFF" BorderThickness="1" Height="40">
               <Grid>
                 <TextBlock x:Name="Ph" Text="Pesquisar" Foreground="{StaticResource Mute}" VerticalAlignment="Center" Margin="14,0" IsHitTestVisible="False"/>
-                <TextBox x:Name="Search" Background="Transparent" BorderThickness="0" Foreground="{StaticResource Foam}" CaretBrush="{StaticResource Cyan}" FocusVisualStyle="{StaticResource FocusRing}" VerticalContentAlignment="Center" Margin="10,0,36,0" TextChanged="Search_Changed"/>
+                <TextBox x:Name="Search" Background="Transparent" BorderThickness="0" Foreground="{StaticResource Foam}" CaretBrush="{DynamicResource Cyan}" FocusVisualStyle="{StaticResource FocusRing}" VerticalContentAlignment="Center" Margin="10,0,36,0" TextChanged="Search_Changed"/>
                 <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Mute}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0"/>
               </Grid>
             </Border>
@@ -190,7 +193,7 @@
             <Border x:Name="YtSearchPanel" Grid.Row="1" Visibility="Collapsed" Margin="2,0,16,14" Padding="14,10" CornerRadius="12" Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1">
               <StackPanel>
                 <Grid>
-                  <TextBlock Text="No YouTube" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource Cyan}"/>
+                  <TextBlock Text="No YouTube" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource Cyan}"/>
                   <TextBlock x:Name="YtSearchStatus" HorizontalAlignment="Right" FontSize="12" Foreground="{StaticResource Mute}"/>
                 </Grid>
                 <ScrollViewer MaxHeight="260" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False" Margin="0,8,0,0">
@@ -203,7 +206,7 @@
                             <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource Foam}" TextTrimming="CharacterEllipsis"/>
                             <TextBlock Text="{Binding Subtitle}" FontSize="12" Foreground="{StaticResource Mute}" TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
                           </StackPanel>
-                          <TextBlock Grid.Column="1" Text="{Binding State}" FontSize="12" Foreground="{StaticResource Cyan}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                          <TextBlock Grid.Column="1" Text="{Binding State}" FontSize="12" Foreground="{DynamicResource Cyan}" VerticalAlignment="Center" Margin="0,0,12,0"/>
                           <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                             <Button Style="{StaticResource PillBtn}" Padding="12,6" FontSize="12" Content="Ouvir" ToolTip="Toca agora, sem baixar" IsEnabled="{Binding CanListen}" Click="YtResultListen_Click" Margin="0,0,8,0"/>
                             <Button Style="{StaticResource PillBtn}" Padding="12,6" FontSize="12" Content="Baixar áudio" ToolTip="Baixa como MP3 para o aparelho" IsEnabled="{Binding CanDownload}" Click="YtResultAudio_Click" Margin="0,0,8,0"/>
@@ -232,7 +235,7 @@
               </ListBox.ItemContainerStyle>
             </ListBox>
             <StackPanel x:Name="Empty" Grid.Row="2" Visibility="Collapsed" Margin="2,10,0,0">
-              <TextBlock Text="&#xE8D6;" FontFamily="Segoe MDL2 Assets" FontSize="54" Foreground="{StaticResource Cyan}" HorizontalAlignment="Left" Margin="0,0,0,14">
+              <TextBlock Text="&#xE8D6;" FontFamily="Segoe MDL2 Assets" FontSize="54" Foreground="{DynamicResource Cyan}" HorizontalAlignment="Left" Margin="0,0,0,14">
                 <TextBlock.RenderTransform><TranslateTransform/></TextBlock.RenderTransform>
                 <TextBlock.Triggers><EventTrigger RoutedEvent="FrameworkElement.Loaded"><BeginStoryboard>
                   <Storyboard RepeatBehavior="Forever" AutoReverse="True" Timeline.DesiredFrameRate="30">
@@ -270,7 +273,7 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                   <DataTemplate>
-                    <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="12">
+                    <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="12" ToolTip="{Binding Reason}">
                       <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="48"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                         <Border Width="48" Height="48" CornerRadius="8" Background="{Binding Art, IsAsync=True, FallbackValue={StaticResource ArtPlaceholder}}"/>
@@ -301,6 +304,7 @@
               </StackPanel>
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,0,0">
                 <Button x:Name="PlAutoBtn" Style="{StaticResource PillBtn}" Content="Música automática: ligada" ToolTip="Liga ou desliga a fila inteligente (escolhe e baixa músicas pelo seu gosto)" Click="PlAuto_Click" Margin="0,0,10,0"/>
+                <Button Style="{StaticResource PillBtn}" Content="Importar .m3u" ToolTip="Cria uma playlist a partir de um arquivo .m3u / .m3u8" Click="ImportPlaylist_Click" Margin="0,0,10,0"/>
                 <Button Style="{StaticResource PillBtn}" Content="Exportar .m3u" ToolTip="Salva a playlist selecionada como arquivo .m3u (backup)" Click="ExportPlaylist_Click" Margin="0,0,10,0"/>
                 <Button Style="{StaticResource PillBtn}" Content="Salvar fila como playlist" Click="SaveQueue_Click"/>
               </StackPanel>
@@ -324,8 +328,8 @@
                           <ControlTemplate TargetType="ListBoxItem">
                             <Border x:Name="bd" Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="12" SnapsToDevicePixels="True">
                               <DockPanel>
-                                <Border Width="36" Height="36" CornerRadius="8" Background="#332F8CFF" DockPanel.Dock="Left">
-                                  <TextBlock Text="&#xE8D6;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{StaticResource Cyan}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Border Width="36" Height="36" CornerRadius="8" Background="{DynamicResource Az33}" DockPanel.Dock="Left">
+                                  <TextBlock Text="&#xE8D6;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource Cyan}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                                 <ContentPresenter Margin="12,0,0,0" VerticalAlignment="Center" TextElement.FontWeight="SemiBold"/>
                               </DockPanel>
@@ -333,8 +337,8 @@
                             <ControlTemplate.Triggers>
                               <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="bd" Property="Background" Value="#2AFFFFFF"/></Trigger>
                               <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#3A2F8CFF"/>
-                                <Setter TargetName="bd" Property="BorderBrush" Value="#4FD1FF"/>
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Az3A}"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
                               </Trigger>
                             </ControlTemplate.Triggers>
                           </ControlTemplate>
@@ -430,137 +434,337 @@
           <!-- Configurações -->
           <Grid x:Name="SettingsView" Visibility="Collapsed" Margin="40,18,24,0">
             <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-            <StackPanel Margin="0,0,16,22">
+            <StackPanel Margin="0,0,16,16">
               <TextBlock Text="Configurações" FontSize="40" FontWeight="SemiBold"/>
               <TextBlock Text="Personalize o Azul Groove Music" FontSize="17" FontWeight="SemiBold" Margin="2,26,0,0"/>
+            <WrapPanel x:Name="SettingsTabs" Margin="0,18,0,0">
+              <RadioButton Style="{StaticResource SetTab}" GroupName="settab" Uid="0" Tag="&#xE790;" Content="Aparência" IsChecked="True" Checked="SettingsTab_Checked"/>
+              <RadioButton Style="{StaticResource SetTab}" GroupName="settab" Uid="1" Tag="&#xE768;" Content="Reprodução" Checked="SettingsTab_Checked"/>
+              <RadioButton Style="{StaticResource SetTab}" GroupName="settab" Uid="2" Tag="&#xE945;" Content="Fila inteligente" Checked="SettingsTab_Checked"/>
+              <RadioButton Style="{StaticResource SetTab}" GroupName="settab" Uid="3" Tag="&#xE8F1;" Content="Biblioteca" Checked="SettingsTab_Checked"/>
+              <RadioButton Style="{StaticResource SetTab}" GroupName="settab" Uid="4" Tag="&#xE770;" Content="Sistema" Checked="SettingsTab_Checked"/>
+              <RadioButton Style="{StaticResource SetTab}" GroupName="settab" Uid="5" Tag="&#xE8B7;" Content="Dados" Checked="SettingsTab_Checked"/>
+            </WrapPanel>
             </StackPanel>
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+            <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
               <StackPanel Margin="0,0,16,24" MaxWidth="760" HorizontalAlignment="Left">
-                <TextBlock Text="Aparência" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource Cyan}" Margin="2,0,0,8"/>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Animações de fundo" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Luzes em movimento e ondas do Início. Desligue para economizar bateria e processador." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                <StackPanel x:Name="SetPgAppearance">
+                  <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Margin="0,0,0,18">
+                    <StackPanel>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Animações de fundo" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Luzes em movimento e ondas do Início. Desligue para economizar bateria e processador." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefAnim" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefAnim_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Modo leve" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Desliga as animações de fundo e deixa o visualizador mais simples. Bom para PC fraco ou notebook na bateria." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefLight" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefLight_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Cor de destaque" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Muda a cor dos botões, barras e degradês. Os brilhos de fundo continuam azuis." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <Button x:Name="PrefAccentBtn" Grid.Column="1" Style="{StaticResource PillBtn}" Content="Azul" VerticalAlignment="Center" Click="PrefAccent_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Idioma" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Clique para trocar de idioma. As traduções novas são baixadas do GitHub ao abrir o app (usa a internet)." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                          <Button x:Name="PrefLangBtn" Style="{StaticResource PillBtn}" Content="Português" Click="PrefLang_Click"/>
+                          <Button x:Name="PrefLangUpdBtn" Style="{StaticResource PillBtn}" Content="Atualizar idiomas" Margin="8,0,0,0" Click="PrefLangUpd_Click"/>
+                        </StackPanel>
+                      </Grid>
+                    </Border>
                     </StackPanel>
-                    <CheckBox x:Name="PrefAnim" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefAnim_Click"/>
-                  </Grid>
-                </Border>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Modo leve" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Desliga as animações de fundo e deixa o visualizador mais simples. Bom para PC fraco ou notebook na bateria." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <CheckBox x:Name="PrefLight" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefLight_Click"/>
-                  </Grid>
-                </Border>
-                <TextBlock Text="Reprodução" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource Cyan}" Margin="2,10,0,8"/>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Continuar de onde parou" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Ao abrir o app, volta para a última faixa e posição." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <CheckBox x:Name="PrefResume" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefResume_Click"/>
-                  </Grid>
-                </Border>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Colocar músicas novas no player" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Música baixada do YouTube ou copiada para uma pasta da biblioteca entra sozinha na fila (e já toca, se o player estiver parado)." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <CheckBox x:Name="PrefAutoQueue" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefAutoQueue_Click"/>
-                  </Grid>
-                </Border>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Fila inteligente" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="A cada troca de música, o app escolhe sozinho a próxima e coloca na fila, aprendendo com o que você mais ouve, em que hora ouve e o que você pula." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <CheckBox x:Name="PrefSmart" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefSmart_Click"/>
-                  </Grid>
-                </Border>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                  <Button x:Name="PrefSmartAheadBtn" Style="{StaticResource PillBtn}" Content="Músicas à frente: 2" ToolTip="Quantas músicas a fila inteligente mantém prontas" Click="PrefSmartAhead_Click"/>
+                  </Border>
                 </StackPanel>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Baixar músicas novas do YouTube" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="A fila inteligente também baixa sozinha músicas que você ainda não tem, parecidas com as que você mais ouve, e coloca como a próxima da fila. Salva em Audio\Automatico (máx. 60). Usa a internet; desligue se não quiser." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                <StackPanel x:Name="SetPgPlayback" Visibility="Collapsed">
+                  <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Margin="0,0,0,18">
+                    <StackPanel>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Continuar de onde parou" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Ao abrir o app, volta para a última faixa e posição." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefResume" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefResume_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Nivelar volume entre músicas" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Evita que uma música toque bem mais alto que a outra. Vale depois de reiniciar o app." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefLevel" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefLevel_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Letras sincronizadas" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Mostra a letra na página Tocando agora quando existe um arquivo .lrc com o mesmo nome da música (ou a letra com tempos gravada nas informações)." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefLyrics" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefLyrics_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Transição suave entre músicas" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="A música some aos poucos no fim e a próxima entra aos poucos. Clique para mudar a duração." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <Button x:Name="PrefFadeBtn" Grid.Column="1" Style="{StaticResource PillBtn}" Content="Desligada" VerticalAlignment="Center" Click="PrefFade_Click"/>
+                      </Grid>
+                    </Border>
                     </StackPanel>
-                    <CheckBox x:Name="PrefSmartDl" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefSmartDl_Click"/>
-                  </Grid>
-                </Border>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Nivelar volume entre músicas" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Evita que uma música toque bem mais alto que a outra. Vale depois de reiniciar o app." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <CheckBox x:Name="PrefLevel" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefLevel_Click"/>
-                  </Grid>
-                </Border>
-                <TextBlock Text="Busca" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource Cyan}" Margin="2,10,0,8"/>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Buscar também no YouTube" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Ao pesquisar, mostra resultados do YouTube e deixa baixar a música (MP3) ou o vídeo para o aparelho. Usa a internet e envia o texto da busca ao YouTube." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <CheckBox x:Name="PrefYtSearch" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefYtSearch_Click"/>
-                  </Grid>
-                </Border>
-                <TextBlock Text="Sistema" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource Cyan}" Margin="2,10,0,8"/>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Minimizar para a bandeja" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Ao minimizar, a janela some e a música continua tocando pelo ícone da bandeja." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <CheckBox x:Name="PrefTray" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefTray_Click"/>
-                  </Grid>
-                </Border>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Iniciar com o Windows" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Abre o Azul Groove Music quando você entrar no Windows." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <CheckBox x:Name="PrefStartup" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefStartup_Click"/>
-                  </Grid>
-                </Border>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Teclas de mídia em qualquer lugar" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Play/pausa, próxima e anterior do teclado funcionam mesmo com o app minimizado na bandeja." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <CheckBox x:Name="PrefMediaKeys" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefMediaKeys_Click"/>
-                  </Grid>
-                </Border>
-                <TextBlock Text="Dados" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource Cyan}" Margin="2,10,0,8"/>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                  <Button Style="{StaticResource PillBtn}" Content="Pasta de downloads" ToolTip="Onde as músicas e vídeos baixados do YouTube são salvos" Click="PrefYtFolder_Click" Margin="0,0,10,0"/>
-                  <Button Style="{StaticResource PillBtn}" Content="Abrir pasta de dados" Click="PrefDataFolder_Click" Margin="0,0,10,0"/>
-                  <Button Style="{StaticResource PillBtn}" Content="Limpar cache da busca" ToolTip="Apaga as buscas do YouTube salvas no aparelho" Click="PrefYtCacheClear_Click" Margin="0,0,10,0"/>
-                  <Button Style="{StaticResource PillBtn}" Content="Restaurar padrões" Click="PrefReset_Click"/>
+                  </Border>
                 </StackPanel>
-                <TextBlock x:Name="PrefYtFolderTxt" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="2,2,0,0"/>
+                <StackPanel x:Name="SetPgSmart" Visibility="Collapsed">
+                  <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Margin="0,0,0,18">
+                    <StackPanel>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Fila inteligente" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="A cada troca de música, o app escolhe sozinho a próxima e coloca na fila, aprendendo com o que você mais ouve, em que hora ouve e o que você pula." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefSmart" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefSmart_Click"/>
+                      </Grid>
+                    </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <TextBlock Text="Quantas músicas a fila inteligente mantém prontas" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                          <Button x:Name="PrefSmartAheadBtn" Grid.Column="1" Style="{StaticResource PillBtn}" Content="Músicas à frente: 2" VerticalAlignment="Center" Click="PrefSmartAhead_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Seus gostos" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="Estilos, artistas e idiomas que a fila inteligente e as recomendações usam" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" Content="Escolher" VerticalAlignment="Center" Click="PrefTaste_Click"/>
+                        </Grid>
+                      </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Baixar músicas novas do YouTube" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="A fila inteligente também baixa sozinha músicas que você ainda não tem, parecidas com as que você mais ouve, e coloca como a próxima da fila. Salva em Audio\Automatico (máx. 60). Usa a internet; desligue se não quiser." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefSmartDl" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefSmartDl_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Baixar em lote a cada hora" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="De hora em hora, baixa de uma vez uma quantidade grande de músicas novas pelo seu gosto (sem interromper o que está tocando). Precisa de 'Baixar músicas novas do YouTube' ligado, respeita o limite de músicas automáticas e não roda com o notebook na bateria." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefSmartBatch" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefSmartBatch_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="Quantas músicas baixar em cada lote" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                        <Button x:Name="PrefSmartBatchBtn" Grid.Column="1" Style="{StaticResource PillBtn}" Content="Músicas por lote: 25" VerticalAlignment="Center" Click="PrefSmartBatchCount_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Limite de músicas automáticas" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Máximo de arquivos que a fila inteligente guarda em Audio\Automatico. Clique para mudar." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <Button x:Name="PrefAutoMaxBtn" Grid.Column="1" Style="{StaticResource PillBtn}" Content="60 arquivos" VerticalAlignment="Center" Click="PrefAutoMax_Click"/>
+                      </Grid>
+                    </Border>
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+                <StackPanel x:Name="SetPgLibrary" Visibility="Collapsed">
+                  <TextBlock Text="Biblioteca" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Cyan}" Margin="2,0,0,8"/>
+                  <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Margin="0,0,0,18">
+                    <StackPanel>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Colocar músicas novas no player" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="Música baixada do YouTube ou copiada para uma pasta da biblioteca entra sozinha na fila (e já toca, se o player estiver parado)." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <CheckBox x:Name="PrefAutoQueue" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefAutoQueue_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Buscar também no YouTube" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="Ao pesquisar, mostra resultados do YouTube e deixa baixar a música (MP3) ou o vídeo para o aparelho. Usa a internet e envia o texto da busca ao YouTube." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <CheckBox x:Name="PrefYtSearch" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefYtSearch_Click"/>
+                        </Grid>
+                      </Border>
+                    </StackPanel>
+                  </Border>
+                  <TextBlock Text="Ferramentas" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Cyan}" Margin="2,0,0,8"/>
+                  <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Margin="0,0,0,18">
+                    <StackPanel>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Achar duplicadas" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Procura a mesma música repetida na biblioteca" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE76C;" VerticalAlignment="Center" Click="FindDuplicates_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Meu resumo de uso" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Mais ouvidas, artistas e horários" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE76C;" VerticalAlignment="Center" Click="Stats_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Limpar músicas automáticas" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Manda para a Lixeira as músicas baixadas sozinhas (as favoritas ficam)" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE76C;" VerticalAlignment="Center" Click="CleanAuto_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Zerar bloqueios da fila" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Volta a sugerir as músicas e artistas que você bloqueou" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE76C;" VerticalAlignment="Center" Click="ClearBlocks_Click"/>
+                        </Grid>
+                      </Border>
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+                <StackPanel x:Name="SetPgSystem" Visibility="Collapsed">
+                  <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Margin="0,0,0,18">
+                    <StackPanel>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Minimizar para a bandeja" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Ao minimizar, a janela some e a música continua tocando pelo ícone da bandeja." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefTray" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefTray_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Iniciar com o Windows" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Abre o Azul Groove Music quando você entrar no Windows." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefStartup" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefStartup_Click"/>
+                      </Grid>
+                    </Border>
+                    <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Teclas de mídia em qualquer lugar" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Play/pausa, próxima e anterior do teclado funcionam mesmo com o app minimizado na bandeja." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefMediaKeys" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefMediaKeys_Click"/>
+                      </Grid>
+                    </Border>
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+                <StackPanel x:Name="SetPgData" Visibility="Collapsed">
+                  <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Margin="0,0,0,18">
+                    <StackPanel>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Pasta de downloads" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock x:Name="PrefYtFolderTxt" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE838;" ToolTip="Onde as músicas e vídeos baixados do YouTube são salvos" VerticalAlignment="Center" Click="PrefYtFolder_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Abrir pasta de dados" FontSize="14" FontWeight="SemiBold"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE838;" VerticalAlignment="Center" Click="PrefDataFolder_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Limpar cache da busca" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Apaga as buscas do YouTube salvas no aparelho" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE74D;" VerticalAlignment="Center" Click="PrefYtCacheClear_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Restaurar padrões" FontSize="14" FontWeight="SemiBold"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE777;" VerticalAlignment="Center" Click="PrefReset_Click"/>
+                        </Grid>
+                      </Border>
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
               </StackPanel>
             </ScrollViewer>
           </Grid>
@@ -573,61 +777,134 @@
             </StackPanel>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
               <StackPanel Margin="0,0,16,24" MaxWidth="760" HorizontalAlignment="Left">
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,14" Margin="0,0,0,14">
-                  <StackPanel>
-                    <TextBlock Text="Azul Groove Music" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock x:Name="AboutVersionTxt" FontSize="13" Foreground="{StaticResource Cyan}" Margin="0,4,0,0"/>
-                    <TextBlock Text="© 2026 ASTM Software. Todos os direitos reservados." FontSize="13" Margin="0,10,0,0"/>
-                  </StackPanel>
-                </Border>
-                <TextBlock Text="Atualizações" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource Cyan}" Margin="2,10,0,8"/>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,0,0,10">
+                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Padding="22,20" Margin="0,0,0,18">
                   <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                      <TextBlock Text="Buscar atualizações ao abrir" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="Ao abrir o app, procura uma versão nova nos Releases do GitHub e pergunta se você quer instalar. Usa a internet." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Border Width="68" Height="68" CornerRadius="22" Background="{DynamicResource Grad}" Margin="0,0,20,0" VerticalAlignment="Center">
+                      <TextBlock Text="♪" FontSize="32" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                      <TextBlock Text="Azul Groove Music" FontSize="22" FontWeight="SemiBold"/>
+                      <TextBlock x:Name="AboutVersionTxt" FontSize="13.5" Foreground="{DynamicResource Cyan}" Margin="0,4,0,0"/>
+                      <TextBlock Text="© 2026 ASTM Software. Todos os direitos reservados." FontSize="12" Foreground="{StaticResource Mute}" Margin="0,8,0,0" TextWrapping="Wrap"/>
                     </StackPanel>
-                    <CheckBox x:Name="PrefUpdate" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefUpdate_Click"/>
                   </Grid>
                 </Border>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                  <Button Style="{StaticResource PillBtn}" Content="Buscar atualizações agora" Click="PrefUpdateNow_Click" Margin="0,0,10,0"/>
-                  <Button Style="{StaticResource PillBtn}" Content="Abrir Releases no GitHub" Click="PrefReleases_Click" Margin="0,0,10,0"/>
-                  <Button Style="{StaticResource PillBtn}" Content="Ver licença de uso" Click="PrefLicense_Click"/>
-                </StackPanel>
-                <TextBlock x:Name="UpdStatusTxt" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="2,0,0,10"/>
-                <TextBlock Text="Componentes e créditos" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource Cyan}" Margin="2,10,0,8"/>
-                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="12" Padding="16,14" Margin="0,0,0,10">
+                <TextBlock Text="Atualizações" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Cyan}" Margin="2,10,0,8"/>
+                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Margin="0,0,0,6">
                   <StackPanel>
-                <StackPanel Margin="0,0,0,10">
-                  <TextBlock Text="VLC / LibVLC e LibVLCSharp (VideoLAN)" FontSize="14" FontWeight="SemiBold"/>
-                  <TextBlock Text="Motor de áudio e vídeo." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,10">
-                  <TextBlock Text="TagLibSharp" FontSize="14" FontWeight="SemiBold"/>
-                  <TextBlock Text="Leitura de tags e capas dos arquivos." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,10">
-                  <TextBlock Text="NAudio" FontSize="14" FontWeight="SemiBold"/>
-                  <TextBlock Text="Áudio no Windows." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,10">
-                  <TextBlock Text="yt-dlp" FontSize="14" FontWeight="SemiBold"/>
-                  <TextBlock Text="Busca e download de músicas do YouTube." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,10">
-                  <TextBlock Text="FFmpeg" FontSize="14" FontWeight="SemiBold"/>
-                  <TextBlock Text="Conversão dos downloads para MP3." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,10">
-                  <TextBlock Text=".NET e WPF (Microsoft)" FontSize="14" FontWeight="SemiBold"/>
-                  <TextBlock Text="Plataforma e interface do app." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,10">
-                  <TextBlock Text="Segoe MDL2 Assets (Microsoft)" FontSize="14" FontWeight="SemiBold"/>
-                  <TextBlock Text="Ícones da interface." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                </StackPanel>
+                        <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Buscar atualizações ao abrir" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Ao abrir o app, procura uma versão nova nos Releases do GitHub e pergunta se você quer instalar. Usa a internet." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefUpdate" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefUpdate_Click"/>
+                      </Grid>
+                    </Border>
+                        <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                          <TextBlock Text="Instalar atualizações sozinho (modo silencioso)" FontSize="14" FontWeight="SemiBold"/>
+                          <TextBlock Text="Quando sair uma versão nova, o app baixa e instala em segundo plano e abre de novo no fim, sem perguntar. Só instala com a música parada." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <CheckBox x:Name="PrefAutoInstall" Grid.Column="1" Style="{StaticResource Toggle}" Click="PrefAutoInstall_Click"/>
+                      </Grid>
+                    </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Buscar atualizações agora" FontSize="14" FontWeight="SemiBold"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE72C;" VerticalAlignment="Center" Click="PrefUpdateNow_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Ver novidades" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="Mostra o que mudou em cada versão" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE76C;" ToolTip="Mostra o que mudou em cada versão" VerticalAlignment="Center" Click="PrefWhatsNew_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Abrir Releases no GitHub" FontSize="14" FontWeight="SemiBold"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE76C;" VerticalAlignment="Center" Click="PrefReleases_Click"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,14" BorderBrush="#1478AAFF" BorderThickness="0">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Ver licença de uso" FontSize="14" FontWeight="SemiBold"/>
+                          </StackPanel>
+                          <Button Grid.Column="1" Style="{StaticResource PillBtn}" FontFamily="Segoe MDL2 Assets" FontSize="15" Padding="16,9" Content="&#xE76C;" VerticalAlignment="Center" Click="PrefLicense_Click"/>
+                        </Grid>
+                      </Border>
+                  </StackPanel>
+                </Border>
+                <TextBlock x:Name="UpdStatusTxt" FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="2,0,0,10"/>
+                <TextBlock Text="Componentes e créditos" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Cyan}" Margin="2,10,0,8"/>
+                <Border Background="#1BFFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" CornerRadius="14" Margin="0,0,0,12">
+                  <StackPanel>
+                      <Border Padding="18,13" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="250"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                          <TextBlock Text="VLC / LibVLC e LibVLCSharp (VideoLAN)" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,14,0"/>
+                          <TextBlock Grid.Column="1" Text="Motor de áudio e vídeo." FontSize="12.5" Foreground="{StaticResource Mute}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,13" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="250"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                          <TextBlock Text="TagLibSharp" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,14,0"/>
+                          <TextBlock Grid.Column="1" Text="Leitura de tags e capas dos arquivos." FontSize="12.5" Foreground="{StaticResource Mute}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,13" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="250"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                          <TextBlock Text="NAudio" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,14,0"/>
+                          <TextBlock Grid.Column="1" Text="Áudio no Windows." FontSize="12.5" Foreground="{StaticResource Mute}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,13" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="250"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                          <TextBlock Text="yt-dlp" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,14,0"/>
+                          <TextBlock Grid.Column="1" Text="Busca e download de músicas do YouTube." FontSize="12.5" Foreground="{StaticResource Mute}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,13" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="250"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                          <TextBlock Text="FFmpeg" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,14,0"/>
+                          <TextBlock Grid.Column="1" Text="Conversão dos downloads para MP3." FontSize="12.5" Foreground="{StaticResource Mute}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,13" BorderBrush="#1478AAFF" BorderThickness="0,0,0,1">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="250"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                          <TextBlock Text=".NET e WPF (Microsoft)" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,14,0"/>
+                          <TextBlock Grid.Column="1" Text="Plataforma e interface do app." FontSize="12.5" Foreground="{StaticResource Mute}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </Grid>
+                      </Border>
+                      <Border Padding="18,13" BorderBrush="#1478AAFF" BorderThickness="0">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="250"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                          <TextBlock Text="Segoe MDL2 Assets (Microsoft)" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,14,0"/>
+                          <TextBlock Grid.Column="1" Text="Ícones da interface." FontSize="12.5" Foreground="{StaticResource Mute}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </Grid>
+                      </Border>
                   </StackPanel>
                 </Border>
                 <TextBlock Text="Cada componente segue a licença de seus autores. O Azul Groove Music não é afiliado ao YouTube, Google ou VideoLAN. Baixe apenas conteúdo que você tem direito de baixar." FontSize="12" Foreground="{StaticResource Mute}" TextWrapping="Wrap" Margin="2,4,0,16"/>
@@ -647,7 +924,7 @@
                 <TextBlock Text="Links das playlists (um por linha)" FontSize="14" FontWeight="SemiBold" Margin="2,0,0,8"/>
                 <Border CornerRadius="12" Background="#14FFFFFF" BorderBrush="#26FFFFFF" BorderThickness="1">
                   <TextBox x:Name="YtLinks" AcceptsReturn="True" TextWrapping="NoWrap" MinHeight="110" MaxHeight="200" VerticalScrollBarVisibility="Auto"
-                           Background="Transparent" BorderThickness="0" Foreground="{StaticResource Foam}" CaretBrush="{StaticResource Cyan}" Padding="12,10"
+                           Background="Transparent" BorderThickness="0" Foreground="{StaticResource Foam}" CaretBrush="{DynamicResource Cyan}" Padding="12,10"
                            FocusVisualStyle="{StaticResource FocusRing}"/>
                 </Border>
                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
@@ -685,17 +962,22 @@
               <Grid Width="300" Height="300" RenderTransformOrigin="0.5,0.5">
                 <Grid.RenderTransform><TransformGroup><ScaleTransform x:Name="DiscScale"/><RotateTransform x:Name="DiscRot"/></TransformGroup></Grid.RenderTransform>
                 <Grid.CacheMode><BitmapCache/></Grid.CacheMode>
-                <Ellipse Fill="#0A1F4D" Stroke="#552F8CFF" StrokeThickness="3"/>
-                <Ellipse Width="280" Height="280" Stroke="#222F8CFF" StrokeThickness="1.5"/>
-                <Ellipse Width="250" Height="250" Stroke="#1E4FD1FF" StrokeThickness="1.5"/>
-                <Ellipse Width="220" Height="220" Stroke="#222F8CFF" StrokeThickness="1.5"/>
-                <Ellipse Width="190" Height="190" Stroke="#1E4FD1FF" StrokeThickness="1.5"/>
-                <Ellipse Width="160" Height="160" Stroke="#222F8CFF" StrokeThickness="1.5"/>
-                <Ellipse Width="126" Height="126" Fill="{StaticResource Grad}"/>
+                <Ellipse Fill="#0A1F4D" Stroke="{DynamicResource Az55}" StrokeThickness="3"/>
+                <Ellipse Width="280" Height="280" Stroke="{DynamicResource Az22}" StrokeThickness="1.5"/>
+                <Ellipse Width="250" Height="250" Stroke="{DynamicResource Cy1E}" StrokeThickness="1.5"/>
+                <Ellipse Width="220" Height="220" Stroke="{DynamicResource Az22}" StrokeThickness="1.5"/>
+                <Ellipse Width="190" Height="190" Stroke="{DynamicResource Cy1E}" StrokeThickness="1.5"/>
+                <Ellipse Width="160" Height="160" Stroke="{DynamicResource Az22}" StrokeThickness="1.5"/>
+                <Ellipse Width="126" Height="126" Fill="{DynamicResource Grad}"/>
                 <TextBlock x:Name="DiscLabel" Text="♪" FontSize="46" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <Ellipse Width="12" Height="12" Fill="White" VerticalAlignment="Top" Margin="0,22,0,0" Opacity="0.8"/>
               </Grid>
-              <TextBlock x:Name="PlayerTitle" Text="Nenhuma faixa" FontSize="28" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,34,0,6" MaxWidth="700" TextTrimming="CharacterEllipsis"/>
+              <TextBlock x:Name="PlayerTitle" Text="Nenhuma faixa" FontSize="28" FontWeight="SemiBold" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,34,0,6" MaxWidth="700" MaxHeight="78" TextWrapping="Wrap" TextTrimming="CharacterEllipsis"/>
+              <StackPanel x:Name="LyrPanel" Visibility="Collapsed" Height="96" Margin="0,12,0,0" MaxWidth="720" HorizontalAlignment="Center">
+                <TextBlock x:Name="LyrPrev" FontSize="14" Foreground="{StaticResource Mute}" Opacity="0.6" TextAlignment="Center" TextTrimming="CharacterEllipsis" Height="22"/>
+                <TextBlock x:Name="LyrCur" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource Cyan}" TextAlignment="Center" TextTrimming="CharacterEllipsis" Height="32" Margin="0,4"/>
+                <TextBlock x:Name="LyrNext" FontSize="14" Foreground="{StaticResource Mute}" Opacity="0.6" TextAlignment="Center" TextTrimming="CharacterEllipsis" Height="22"/>
+              </StackPanel>
               <StackPanel x:Name="Bars" Orientation="Horizontal" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,12,0,0"/>
             </StackPanel>
           </Grid>
@@ -727,7 +1009,7 @@
               <StackPanel VerticalAlignment="Center" Margin="14,0,0,0">
                 <TextBlock x:Name="NowTitle" Text="Nenhuma faixa" FontSize="16" FontWeight="SemiBold" MaxWidth="280" TextTrimming="CharacterEllipsis"/>
                 <TextBlock x:Name="NowDetails" Text="" FontSize="11.5" Foreground="{StaticResource Mute}" MaxWidth="280" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
-                <Border x:Name="ChipRes" Visibility="Collapsed" Background="{StaticResource Grad}" CornerRadius="7" Padding="9,2" Margin="0,6,0,0" HorizontalAlignment="Left">
+                <Border x:Name="ChipRes" Visibility="Collapsed" Background="{DynamicResource Grad}" CornerRadius="7" Padding="9,2" Margin="0,6,0,0" HorizontalAlignment="Left">
                   <TextBlock x:Name="ChipTxt" FontSize="11.5" FontWeight="Bold" Foreground="#04122B"/>
                 </Border>
               </StackPanel>
@@ -741,12 +1023,12 @@
                 <Ellipse Width="64" Height="64" StrokeThickness="3.5" RenderTransformOrigin="0.5,0.5">
                   <Ellipse.Stroke>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                      <GradientStop Color="#4FD1FF" Offset="0"/><GradientStop Color="#2F8CFF" Offset="0.5"/><GradientStop Color="#0F2A66" Offset="1"/>
+                      <GradientStop Color="{DynamicResource CyanColor}" Offset="0"/><GradientStop Color="{DynamicResource AzureColor}" Offset="0.5"/><GradientStop Color="#0F2A66" Offset="1"/>
                     </LinearGradientBrush>
                   </Ellipse.Stroke>
                   <Ellipse.RenderTransform><RotateTransform x:Name="RingRot"/></Ellipse.RenderTransform>
                 </Ellipse>
-                <Button x:Name="PlayBtn" Style="{StaticResource IconBtn}" Width="52" Height="52" FontSize="21" Background="{StaticResource Grad}" Content="&#xE768;" Click="Play_Click" ToolTip="Reproduzir / Pausar (Espaço)"/>
+                <Button x:Name="PlayBtn" Style="{StaticResource IconBtn}" Width="52" Height="52" FontSize="21" Background="{DynamicResource Grad}" Content="&#xE768;" Click="Play_Click" ToolTip="Reproduzir / Pausar (Espaço)"/>
               </Grid>
               <Button Style="{StaticResource IconBtn}" Content="&#xE893;" Click="Next_Click" ToolTip="Próxima (N)" Margin="4,0"/>
               <Button Style="{StaticResource IconBtn}" Content="&#xED3D;" Click="Fwd_Click" ToolTip="Avançar 30 s (L)" Margin="4,0"/>
@@ -754,6 +1036,7 @@
             </StackPanel>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+              <Button x:Name="FavBtn" Style="{StaticResource IconBtn}" FontFamily="Segoe UI Symbol" FontSize="20" Content="&#x2661;" Click="Fav_Click" ToolTip="Favoritar (H)"/>
               <Button x:Name="SpdBtn" Style="{StaticResource IconBtn}" FontFamily="Segoe UI" FontSize="13" FontWeight="SemiBold" Width="54" Height="34" Content="1x" Click="Spd_Click" ToolTip="Velocidade (+ / -)"/>
               <Button x:Name="MuteBtn" Style="{StaticResource IconBtn}" Content="&#xE995;" Click="Mute_Click" PreviewMouseWheel="Vol_Wheel" ToolTip="Mudo (M)" RenderTransformOrigin="0.5,0.5">
                 <Button.RenderTransform><ScaleTransform x:Name="MuteScale"/></Button.RenderTransform>
@@ -776,11 +1059,12 @@
         <Border Background="#F20A1F4A" BorderBrush="#554F8CFF" BorderThickness="1" CornerRadius="14" Padding="8" RenderTransformOrigin="0.5,1">
           <Border.RenderTransform><ScaleTransform ScaleX="0.9" ScaleY="0.9"/></Border.RenderTransform>
           <StackPanel Width="300">
-            <Button Style="{StaticResource MenuBtn}" Click="Aspect_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE799;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock x:Name="AspectTxt" Foreground="{StaticResource Foam}" Text="Proporção da tela: Auto"/></StackPanel></Button>
-            <Button Style="{StaticResource MenuBtn}" Click="Sub_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE7F0;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock Foreground="{StaticResource Foam}" Text="Alternar legenda"/></StackPanel></Button>
-            <Button Style="{StaticResource MenuBtn}" Click="Audio_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8D6;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock Foreground="{StaticResource Foam}" Text="Alternar faixa de áudio"/></StackPanel></Button>
-            <Button Style="{StaticResource MenuBtn}" Click="ExternalSubtitle_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock Foreground="{StaticResource Foam}" Text="Abrir legenda .srt"/></StackPanel></Button>
-            <Button Style="{StaticResource MenuBtn}" Click="Sleep_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock x:Name="SleepTxt" Foreground="{StaticResource Foam}" Text="Temporizador: desligado"/></StackPanel></Button>
+            <Button Style="{StaticResource MenuBtn}" Click="Aspect_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE799;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock x:Name="AspectTxt" Foreground="{StaticResource Foam}" Text="Proporção da tela: Auto"/></StackPanel></Button>
+            <Button Style="{StaticResource MenuBtn}" Click="Sub_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE7F0;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock Foreground="{StaticResource Foam}" Text="Alternar legenda"/></StackPanel></Button>
+            <Button Style="{StaticResource MenuBtn}" Click="Audio_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8D6;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock Foreground="{StaticResource Foam}" Text="Alternar faixa de áudio"/></StackPanel></Button>
+            <Button Style="{StaticResource MenuBtn}" Click="ExternalSubtitle_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock Foreground="{StaticResource Foam}" Text="Abrir legenda .srt"/></StackPanel></Button>
+            <Button Style="{StaticResource MenuBtn}" Click="Mini_Open_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8A7;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock Foreground="{StaticResource Foam}" Text="Mini player (Ctrl+M)"/></StackPanel></Button>
+            <Button Style="{StaticResource MenuBtn}" Click="Sleep_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource Cyan}" Width="28" VerticalAlignment="Center"/><TextBlock x:Name="SleepTxt" Foreground="{StaticResource Foam}" Text="Temporizador: desligado"/></StackPanel></Button>
             <TextBlock Text="Saída de áudio" Foreground="{StaticResource Mute}" Margin="10,8,0,4"/>
             <ComboBox x:Name="AudioOutputBox" Height="32" FocusVisualStyle="{StaticResource FocusRing}" SelectionChanged="AudioOutput_Changed" ToolTip="Dispositivo de saída de áudio"/>
             <TextBlock Text="Equalizador VLC" Foreground="{StaticResource Mute}" Margin="10,10,0,4"/>
@@ -793,8 +1077,8 @@
           </StackPanel>
         </Border>
       </Popup>
-      <Popup x:Name="ToastPop" PlacementTarget="{Binding ElementName=Root}" Placement="Center" VerticalOffset="-220" StaysOpen="True" AllowsTransparency="True" PopupAnimation="Fade" IsHitTestVisible="False">
-        <Border Background="#E60A1F4A" BorderBrush="#664FD1FF" BorderThickness="1" CornerRadius="12" Padding="22,10">
+      <Popup x:Name="ToastPop" PlacementTarget="{Binding ElementName=Root}" Placement="Center" VerticalOffset="-220" StaysOpen="True" AllowsTransparency="True" PopupAnimation="Fade" IsHitTestVisible="False" Opened="Toast_Opened">
+        <Border Background="#E60A1F4A" BorderBrush="{DynamicResource Cy66}" BorderThickness="1" CornerRadius="12" Padding="22,10">
           <TextBlock x:Name="ToastTxt" Foreground="{StaticResource Foam}" FontSize="16" FontWeight="SemiBold" MaxWidth="600" TextTrimming="CharacterEllipsis"/>
         </Border>
       </Popup>

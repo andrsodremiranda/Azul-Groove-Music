@@ -7,6 +7,31 @@
     <SolidColorBrush x:Key="Mute" Color="#AFC6E5"/>
     <SolidColorBrush x:Key="Azure" Color="#2F8CFF"/>
     <SolidColorBrush x:Key="Cyan" Color="#4FD1FF"/>
+    <!-- Cor de destaque: o app TROCA estes recursos (ApplyAccent) e tudo que usa DynamicResource muda junto -->
+    <Color x:Key="AzureColor">#2F8CFF</Color>
+    <Color x:Key="CyanColor">#4FD1FF</Color>
+    <SolidColorBrush x:Key="Az1A" Color="#1A2F8CFF"/>
+    <SolidColorBrush x:Key="Cy1A" Color="#1A4FD1FF"/>
+    <SolidColorBrush x:Key="Az1E" Color="#1E2F8CFF"/>
+    <SolidColorBrush x:Key="Cy1E" Color="#1E4FD1FF"/>
+    <SolidColorBrush x:Key="Az22" Color="#222F8CFF"/>
+    <SolidColorBrush x:Key="Cy22" Color="#224FD1FF"/>
+    <SolidColorBrush x:Key="Az26" Color="#262F8CFF"/>
+    <SolidColorBrush x:Key="Cy26" Color="#264FD1FF"/>
+    <SolidColorBrush x:Key="Az2E" Color="#2E2F8CFF"/>
+    <SolidColorBrush x:Key="Cy2E" Color="#2E4FD1FF"/>
+    <SolidColorBrush x:Key="Az33" Color="#332F8CFF"/>
+    <SolidColorBrush x:Key="Cy33" Color="#334FD1FF"/>
+    <SolidColorBrush x:Key="Az3A" Color="#3A2F8CFF"/>
+    <SolidColorBrush x:Key="Cy3A" Color="#3A4FD1FF"/>
+    <SolidColorBrush x:Key="Az3D" Color="#3D2F8CFF"/>
+    <SolidColorBrush x:Key="Cy3D" Color="#3D4FD1FF"/>
+    <SolidColorBrush x:Key="Az44" Color="#442F8CFF"/>
+    <SolidColorBrush x:Key="Cy44" Color="#444FD1FF"/>
+    <SolidColorBrush x:Key="Az55" Color="#552F8CFF"/>
+    <SolidColorBrush x:Key="Cy55" Color="#554FD1FF"/>
+    <SolidColorBrush x:Key="Az66" Color="#662F8CFF"/>
+    <SolidColorBrush x:Key="Cy66" Color="#664FD1FF"/>
     <SolidColorBrush x:Key="Hover" Color="#22FFFFFF"/>
     <SolidColorBrush x:Key="CloseHover" Color="#E5484D"/>
     <LinearGradientBrush x:Key="Grad" StartPoint="0,0" EndPoint="1,0">
@@ -19,7 +44,7 @@
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="Control">
-            <Rectangle Margin="-3" RadiusX="7" RadiusY="7" Stroke="{StaticResource Cyan}" StrokeThickness="2" IsHitTestVisible="False"/>
+            <Rectangle Margin="-3" RadiusX="7" RadiusY="7" Stroke="{DynamicResource Cyan}" StrokeThickness="2" IsHitTestVisible="False"/>
           </ControlTemplate>
         </Setter.Value>
       </Setter>
@@ -103,17 +128,17 @@
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="Button">
-            <Border x:Name="b" CornerRadius="12" Background="#1A2F8CFF" BorderBrush="#662F8CFF" BorderThickness="1.2" Padding="{TemplateBinding Padding}">
+            <Border x:Name="b" CornerRadius="12" Background="{DynamicResource Az1A}" BorderBrush="{DynamicResource Az66}" BorderThickness="1.2" Padding="{TemplateBinding Padding}">
               <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <ControlTemplate.Triggers>
               <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="b" Property="Background" Value="#442F8CFF"/>
-                <Setter TargetName="b" Property="BorderBrush" Value="#4FD1FF"/>
+                <Setter TargetName="b" Property="Background" Value="{DynamicResource Az44}"/>
+                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
               </Trigger>
               <Trigger Property="IsKeyboardFocused" Value="True">
-                <Setter TargetName="b" Property="BorderBrush" Value="#4FD1FF"/>
-                <Setter TargetName="b" Property="Background" Value="#442F8CFF"/>
+                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
+                <Setter TargetName="b" Property="Background" Value="{DynamicResource Az44}"/>
               </Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
@@ -138,11 +163,11 @@
             </Grid>
             <ControlTemplate.Triggers>
               <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="tr" Property="BorderBrush" Value="#4FD1FF"/>
+                <Setter TargetName="tr" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
               </Trigger>
               <Trigger Property="IsChecked" Value="True">
-                <Setter TargetName="tr" Property="Background" Value="{StaticResource Grad}"/>
-                <Setter TargetName="tr" Property="BorderBrush" Value="#4FD1FF"/>
+                <Setter TargetName="tr" Property="Background" Value="{DynamicResource Grad}"/>
+                <Setter TargetName="tr" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
                 <Setter TargetName="kn" Property="HorizontalAlignment" Value="Right"/>
                 <Setter TargetName="kn" Property="Margin" Value="0,0,4,0"/>
                 <Setter TargetName="kn" Property="Fill" Value="White"/>
@@ -163,7 +188,7 @@
           <ControlTemplate TargetType="RadioButton">
             <Grid Height="44" Margin="10,2" Background="Transparent">
               <Border x:Name="bg" CornerRadius="10" Background="Transparent"/>
-              <Rectangle x:Name="bar" Width="3.5" Height="20" RadiusX="2" RadiusY="2" Fill="{StaticResource GradV}" HorizontalAlignment="Left" Margin="1,0,0,0" Opacity="0" RenderTransformOrigin="0.5,0.5">
+              <Rectangle x:Name="bar" Width="3.5" Height="20" RadiusX="2" RadiusY="2" Fill="{DynamicResource GradV}" HorizontalAlignment="Left" Margin="1,0,0,0" Opacity="0" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform><ScaleTransform x:Name="bs" ScaleY="0.1"/></Rectangle.RenderTransform>
               </Rectangle>
               <StackPanel Orientation="Horizontal" Margin="18,0">
@@ -182,12 +207,12 @@
                 </Storyboard></BeginStoryboard></Trigger.ExitActions>
               </Trigger>
               <Trigger Property="IsKeyboardFocused" Value="True">
-                <Setter TargetName="bg" Property="Background" Value="#3D2F8CFF"/>
+                <Setter TargetName="bg" Property="Background" Value="{DynamicResource Az3D}"/>
               </Trigger>
               <Trigger Property="IsChecked" Value="True">
-                <Setter TargetName="bg" Property="Background" Value="#2E2F8CFF"/>
+                <Setter TargetName="bg" Property="Background" Value="{DynamicResource Az2E}"/>
                 <Setter Property="Foreground" Value="White"/>
-                <Setter TargetName="ic" Property="Foreground" Value="{StaticResource Cyan}"/>
+                <Setter TargetName="ic" Property="Foreground" Value="{DynamicResource Cyan}"/>
                 <Trigger.EnterActions><BeginStoryboard><Storyboard>
                   <DoubleAnimation Storyboard.TargetName="bar" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
                   <DoubleAnimation Storyboard.TargetName="bs" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><BackEase Amplitude="0.7"/></DoubleAnimation.EasingFunction></DoubleAnimation>
@@ -196,6 +221,41 @@
                   <DoubleAnimation Storyboard.TargetName="bar" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
                   <DoubleAnimation Storyboard.TargetName="bs" Storyboard.TargetProperty="ScaleY" To="0.1" Duration="0:0:0.15"/>
                 </Storyboard></BeginStoryboard></Trigger.ExitActions>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- Aba de categoria nas Configurações -->
+    <Style x:Key="SetTab" TargetType="RadioButton">
+      <Setter Property="Foreground" Value="{StaticResource Mute}"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Margin" Value="0,0,8,8"/>
+      <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="RadioButton">
+            <Border x:Name="bg" CornerRadius="18" Background="#14FFFFFF" BorderBrush="#2678AAFF" BorderThickness="1" Padding="14,8">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="ic" Text="{TemplateBinding Tag}" FontFamily="Segoe MDL2 Assets" FontSize="14" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="{TemplateBinding Content}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="bg" Property="Background" Value="#24FFFFFF"/>
+                <Setter TargetName="bg" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
+              </Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="bg" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
+              </Trigger>
+              <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="bg" Property="Background" Value="{DynamicResource Az2E}"/>
+                <Setter TargetName="bg" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter TargetName="ic" Property="Foreground" Value="{DynamicResource Cyan}"/>
               </Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
@@ -245,7 +305,7 @@
               <Track x:Name="PART_Track" VerticalAlignment="Center">
                 <Track.DecreaseRepeatButton>
                   <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
-                    <RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Border Height="5" CornerRadius="3" Background="{StaticResource Grad}"/></ControlTemplate></RepeatButton.Template>
+                    <RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Border Height="5" CornerRadius="3" Background="{DynamicResource Grad}"/></ControlTemplate></RepeatButton.Template>
                   </RepeatButton>
                 </Track.DecreaseRepeatButton>
                 <Track.IncreaseRepeatButton>
@@ -256,7 +316,7 @@
                 <Track.Thumb>
                   <Thumb x:Name="th" Width="14" Height="14" RenderTransformOrigin="0.5,0.5"><Thumb.RenderTransform><ScaleTransform x:Name="ths"/></Thumb.RenderTransform>
                     <Thumb.Template><ControlTemplate TargetType="Thumb">
-                      <Ellipse Fill="White" Stroke="#664FD1FF" StrokeThickness="4"/>
+                      <Ellipse Fill="White" Stroke="{DynamicResource Cy66}" StrokeThickness="4"/>
                     </ControlTemplate></Thumb.Template>
                   </Thumb>
                 </Track.Thumb>
@@ -323,7 +383,7 @@
               <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
             </Border>
             <ControlTemplate.Triggers>
-              <Trigger Property="IsSelected" Value="True"><Setter TargetName="bd" Property="Background" Value="#262F8CFF"/></Trigger>
+              <Trigger Property="IsSelected" Value="True"><Setter TargetName="bd" Property="Background" Value="{DynamicResource Az26}"/></Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
         </Setter.Value>
@@ -353,7 +413,7 @@
               <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
             </Border>
             <ControlTemplate.Triggers>
-              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Background" Value="#332F8CFF"/></Trigger>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Background" Value="{DynamicResource Az33}"/></Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
         </Setter.Value>
@@ -404,7 +464,8 @@
             </Grid>
             <ControlTemplate.Triggers>
               <Trigger Property="Role" Value="SubmenuHeader"><Setter TargetName="arrow" Property="Visibility" Value="Visible"/></Trigger>
-              <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="b" Property="Background" Value="#3D2F8CFF"/></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter TargetName="b" Property="Opacity" Value="0.4"/></Trigger>
+              <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="b" Property="Background" Value="{DynamicResource Az3D}"/></Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
         </Setter.Value>
@@ -416,6 +477,17 @@
           <ControlTemplate TargetType="Separator"><Border Height="1" Margin="10,5" Background="#2E78AAFF"/></ControlTemplate>
         </Setter.Value>
       </Setter>
+    </Style>
+    <!-- Menu de copiar/colar das caixas de texto (a busca, os links do YouTube...). Sem isto o menu padrão do Windows aparecia com letras claras sobre fundo branco e parecia que copiar/colar não funcionava. -->
+    <ContextMenu x:Key="TextMenu">
+      <MenuItem Header="Recortar" Command="Cut" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+      <MenuItem Header="Copiar" Command="Copy" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+      <MenuItem Header="Colar" Command="Paste" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+      <Separator/>
+      <MenuItem Header="Selecionar tudo" Command="SelectAll" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+    </ContextMenu>
+    <Style TargetType="TextBox">
+      <Setter Property="ContextMenu" Value="{StaticResource TextMenu}"/>
     </Style>
 
     <!-- Caixa de seleção (Ordenar, Saída de áudio, Equalizador) no estilo do app -->
@@ -431,9 +503,9 @@
               <ContentPresenter VerticalAlignment="Center"/>
             </Border>
             <ControlTemplate.Triggers>
-              <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="b" Property="Background" Value="#3D2F8CFF"/></Trigger>
+              <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="b" Property="Background" Value="{DynamicResource Az3D}"/></Trigger>
               <Trigger Property="IsSelected" Value="True">
-                <Setter TargetName="b" Property="Background" Value="#552F8CFF"/>
+                <Setter TargetName="b" Property="Background" Value="{DynamicResource Az55}"/>
                 <Setter Property="Foreground" Value="White"/>
               </Trigger>
             </ControlTemplate.Triggers>
@@ -455,17 +527,17 @@
                             IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                 <ToggleButton.Template>
                   <ControlTemplate TargetType="ToggleButton">
-                    <Border x:Name="bd" CornerRadius="10" Background="#1A2F8CFF" BorderBrush="#662F8CFF" BorderThickness="1.2">
+                    <Border x:Name="bd" CornerRadius="10" Background="{DynamicResource Az1A}" BorderBrush="{DynamicResource Az66}" BorderThickness="1.2">
                       <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="10" Foreground="{StaticResource Mute}"
                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,13,0"/>
                     </Border>
                     <ControlTemplate.Triggers>
                       <Trigger Property="IsMouseOver" Value="True">
-                        <Setter TargetName="bd" Property="Background" Value="#332F8CFF"/>
-                        <Setter TargetName="bd" Property="BorderBrush" Value="#4FD1FF"/>
+                        <Setter TargetName="bd" Property="Background" Value="{DynamicResource Az33}"/>
+                        <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
                       </Trigger>
                       <Trigger Property="IsChecked" Value="True">
-                        <Setter TargetName="bd" Property="BorderBrush" Value="#4FD1FF"/>
+                        <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Cyan}"/>
                       </Trigger>
                     </ControlTemplate.Triggers>
                   </ControlTemplate>

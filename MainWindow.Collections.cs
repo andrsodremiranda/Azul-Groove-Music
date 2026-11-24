@@ -124,14 +124,15 @@ namespace AzulGroove
             {
                 try
                 {
-                    if (!File.Exists(it.FilePath))
+                    DateTime written = File.GetLastWriteTimeUtc(it.FilePath);   // uma só consulta ao disco por arquivo (antes eram duas); arquivo que não existe devolve o ano 1601
+                    if (written.Year == 1601)
                     {
                         // só some da biblioteca se a unidade está presente (HD externo desconectado não apaga nada)
                         string root = System.IO.Path.GetPathRoot(it.FilePath);
                         if (!string.IsNullOrEmpty(root) && Directory.Exists(root)) diff.Missing.Add(it);
                         continue;
                     }
-                    if (File.GetLastWriteTimeUtc(it.FilePath) != it.FileDate)
+                    if (written != it.FileDate)
                         diff.Changed.Add(new KeyValuePair<Item, Item>(it, new Item(it.FilePath, it.IsVideo)));
                 }
                 catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Could not check " + it.FilePath + ": " + ex.Message); }
@@ -166,10 +167,16 @@ namespace AzulGroove
                     statusShown = true;
                     ScanStatus.Visibility = Visibility.Visible;
                     ScanBar.IsIndeterminate = true;
-                    ScanText.Text = "Procurando mudanças...";
+                    ScanText.Text = T.Get("Procurando mudanças...");
                     progress = new Progress<ScanProgress>(UpdateScanProgress);
                 }
-                LibraryDiff diff = await Task.Run(() => CheckLibrary(snapshot, knownSnap, roots, progress));
+                LibraryDiff diff = await Task.Run(() =>
+                {
+                    // a varredura da biblioteca roda com prioridade baixa: não disputa CPU/disco com o que você está fazendo
+                    var thread = System.Threading.Thread.CurrentThread; var before = thread.Priority;
+                    try { thread.Priority = System.Threading.ThreadPriority.BelowNormal; return CheckLibrary(snapshot, knownSnap, roots, progress); }
+                    finally { thread.Priority = before; }
+                });
 
                 int removed = 0, added = 0, changed = 0;
                 var addedItems = new List<Item>();
@@ -206,11 +213,19 @@ namespace AzulGroove
                     RefreshQueue();
                     Refresh();
                     var parts = new List<string>();
-                    if (added > 0) parts.Add(added == 1 ? "1 nova" : added + " novas");
-                    if (removed > 0) parts.Add(removed == 1 ? "1 removida" : removed + " removidas");
-                    if (changed > 0) parts.Add(changed == 1 ? "1 atualizada" : changed + " atualizadas");
+                    if (added > 0) parts.Add(T.Get(added == 1 ? "1 nova" : added + " novas"));
+                    if (removed > 0) parts.Add(T.Get(removed == 1 ? "1 removida" : removed + " removidas"));
+                    if (changed > 0) parts.Add(T.Get(changed == 1 ? "1 atualizada" : changed + " atualizadas"));
                     Toast("Biblioteca atualizada: " + string.Join(", ", parts));
-                    if (autoQueue && addedItems.Count > 0) AutoEnqueue(addedItems);   // só quando o vigia de pastas achou arquivo novo com o app aberto
+                    if (autoQueue && addedItems.Count > 0)
+                    {
+                        // o lote de hora em hora promete "sem mexer na fila": o vigia de pastas não pode enfileirar o que ele baixou
+                        string autoDir = string.IsNullOrWhiteSpace(ytFolder) ? null : System.IO.Path.Combine(ytFolder, "Audio", "Automatico") + System.IO.Path.DirectorySeparatorChar;
+                        var forQueue = smartBatchRunning && autoDir != null
+                            ? addedItems.Where(i => !i.FilePath.StartsWith(autoDir, StringComparison.OrdinalIgnoreCase)).ToList()
+                            : addedItems;
+                        if (forQueue.Count > 0) AutoEnqueue(forQueue);
+                    }   // só quando o vigia de pastas achou arquivo novo com o app aberto
                 }
                 else if (!silent) Toast("A biblioteca já está em dia");
             }
@@ -223,7 +238,7 @@ namespace AzulGroove
 
         async Task StartupRefreshAsync()
         {
-            try { await Task.Delay(2500); await RefreshLibraryAsync(true); }
+            try { await Task.Delay(StartupBoost.IsLowEnd ? 8000 : 2500); await RefreshLibraryAsync(true); }
             catch (Exception ex) { App.LogError("LibraryRefresh", ex); }
             StartFolderWatching();
         }
@@ -492,11 +507,11 @@ namespace AzulGroove
             catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Could not build groups: " + ex.Message); return; }
             if (gen != groupsGen || (page != 7 && page != 8)) return;
 
-            GroupTitle.Text = artists ? "Artistas" : "Álbuns";
-            GroupSub.Text = groups.Count == 1 ? (artists ? "1 artista" : "1 álbum") : groups.Count + (artists ? " artistas" : " álbuns");
+            GroupTitle.Text = T.Get(artists ? "Artistas" : "Álbuns");
+            GroupSub.Text = T.Get(groups.Count == 1 ? (artists ? "1 artista" : "1 álbum") : groups.Count + (artists ? " artistas" : " álbuns"));
             GroupList.ItemsSource = groups;
             GroupEmpty.Visibility = groups.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-            GroupEmpty.Text = artists ? "Nenhum artista encontrado. Músicas com etiquetas (tags) de artista aparecem aqui." : "Nenhum álbum encontrado. Músicas com etiqueta de álbum aparecem aqui.";
+            GroupEmpty.Text = T.Get(artists ? "Nenhum artista encontrado. Músicas com etiquetas (tags) de artista aparecem aqui." : "Nenhum álbum encontrado. Músicas com etiqueta de álbum aparecem aqui.");
         }
 
         void Group_Click(object s, RoutedEventArgs e)

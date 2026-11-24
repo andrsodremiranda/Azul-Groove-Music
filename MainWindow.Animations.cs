@@ -127,7 +127,8 @@ namespace AzulGroove
         void ApplyVolume()
         {
             if (_mp == null) return;
-            try { _mp.Volume = muted ? 0 : (int)Math.Round(vol); }
+            lastFadeVol = -1;
+            try { _mp.Volume = muted ? 0 : (int)Math.Round(vol * FadeFactor()); }
             catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Could not set playback volume: " + ex.Message); }
         }
         void Vol_Changed(object s, RoutedPropertyChangedEventArgs<double> e)
@@ -173,6 +174,7 @@ namespace AzulGroove
         void ClosePops() { SpdPop.IsOpen = false; MorePop.IsOpen = false; }
         void Pop_Opened(object s, EventArgs e)
         {
+            PopupToNormalLayer((Popup)s);
             if (warming) return;
             if (((Popup)s).Child is FrameworkElement c)
             {
@@ -196,7 +198,9 @@ namespace AzulGroove
                 Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                 {
                     SpdPop.IsOpen = false; MorePop.IsOpen = false; ToastPop.IsOpen = false; warming = false;
-                    if (ToastPop.Child != null) ToastPop.Child.Opacity = 1;
+                    // NÃO devolver Opacity = 1 ao aviso aqui: o ToastPop tem PopupAnimation="Fade", então ao fechar ele
+                    // ainda fica ~150 ms na tela fazendo fade-out. Com o filho já visível, aparecia um quadradinho vazio
+                    // (a "piscada" ao abrir o app). A opacidade é restaurada em Toast(), logo antes de um aviso real.
                 }));
             }
             catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Could not warm popups: " + ex.Message); warming = false; }
@@ -256,7 +260,7 @@ namespace AzulGroove
         void VizFrame(object s, EventArgs e)
         {
             long now = Environment.TickCount64;
-            if (now - vizLast < (prefs.LightMode ? 66 : 33)) return;   // limita o visualizador a ~30 quadros/s (15 no modo leve) em vez de todo quadro da tela
+            if (now - vizLast < (appInactive ? 100 : prefs.LightMode ? 66 : 33)) return;   // limita o visualizador a ~30 quadros/s (15 no modo leve) em vez de todo quadro da tela
             double dt = Math.Min(0.05, (now - vizLast) / 1000.0); vizLast = now;
             bool pl = isPlaying;
             if (now - tgtAt > 110)

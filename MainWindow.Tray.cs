@@ -111,27 +111,27 @@ namespace AzulGroove
                 Padding = new WF.Padding(0, 6, 0, 6)
             };
 
-            trayTitle = new WF.ToolStripLabel("Nenhuma faixa") { Image = GlyphImg("\uE8D6", TrayCyan), ForeColor = TrayFoam, Font = new SD.Font("Segoe UI Semibold", 10f), Padding = new WF.Padding(0, 4, 0, 0) };
+            trayTitle = new WF.ToolStripLabel(T.Get("Nenhuma faixa")) { Image = GlyphImg("\uE8D6", TrayCyan), ForeColor = TrayFoam, Font = new SD.Font("Segoe UI Semibold", 10f), Padding = new WF.Padding(0, 4, 0, 0) };
             trayArtist = new WF.ToolStripLabel("Azul Groove Music") { ForeColor = TrayMute, Font = new SD.Font("Segoe UI", 8.5f), Padding = new WF.Padding(0, 0, 0, 4) };
-            trayPlay = TrayItem("Reproduzir", "\uE768", () => Play_Click(null, null));
-            trayShuf = TrayItem("Aleatório", "\uE8B1", () => Shuf_Click(null, null));
-            trayRep = TrayItem("Repetir", "\uE8EE", () => Rep_Click(null, null));
-            trayMute = TrayItem("Silenciar", "\uE74F", () => Mute_Click(null, null));
+            trayPlay = TrayItem(T.Get("Reproduzir"), "\uE768", () => Play_Click(null, null));
+            trayShuf = TrayItem(T.Get("Aleatório"), "\uE8B1", () => Shuf_Click(null, null));
+            trayRep = TrayItem(T.Get("Repetir"), "\uE8EE", () => Rep_Click(null, null));
+            trayMute = TrayItem(T.Get("Silenciar"), "\uE74F", () => Mute_Click(null, null));
 
             menu.Items.Add(trayTitle);
             menu.Items.Add(trayArtist);
             menu.Items.Add(new WF.ToolStripSeparator());
-            menu.Items.Add(TrayItem("Abrir Azul Groove", "\uE8A7", RestoreFromTray));
+            menu.Items.Add(TrayItem(T.Get("Abrir Azul Groove"), "\uE8A7", RestoreFromTray));
             menu.Items.Add(new WF.ToolStripSeparator());
-            menu.Items.Add(TrayItem("Faixa anterior", "\uE892", () => Prev_Click(null, null)));
+            menu.Items.Add(TrayItem(T.Get("Faixa anterior"), "\uE892", () => Prev_Click(null, null)));
             menu.Items.Add(trayPlay);
-            menu.Items.Add(TrayItem("Próxima faixa", "\uE893", () => Step(1)));
+            menu.Items.Add(TrayItem(T.Get("Próxima faixa"), "\uE893", () => Step(1)));
             menu.Items.Add(new WF.ToolStripSeparator());
             menu.Items.Add(trayShuf);
             menu.Items.Add(trayRep);
             menu.Items.Add(trayMute);
             menu.Items.Add(new WF.ToolStripSeparator());
-            menu.Items.Add(TrayItem("Sair", "\uE7E8", () => Close()));
+            menu.Items.Add(TrayItem(T.Get("Sair"), "\uE7E8", () => Close()));
 
             menu.Opening += (a, b) => RefreshTrayMenu(menu);
             trayIcon.ContextMenuStrip = menu;
@@ -147,16 +147,16 @@ namespace AzulGroove
         {
             try
             {
-                trayTitle.Text = cur != null ? Clip(cur.Name, 32) : "Nenhuma faixa";
+                trayTitle.Text = cur != null ? Clip(cur.Name, 32) : T.Get("Nenhuma faixa");
                 string detail = cur != null ? (string.IsNullOrWhiteSpace(cur.Artist) ? cur.Kind : cur.Artist) : "Azul Groove Music";
                 trayArtist.Text = Clip(detail, 40);
-                trayPlay.Text = isPlaying ? "Pausar" : "Reproduzir";
+                trayPlay.Text = T.Get(isPlaying ? "Pausar" : "Reproduzir");
                 trayPlay.Image = GlyphImg(isPlaying ? "\uE769" : "\uE768", TrayCyan);
-                trayShuf.Text = shuffle ? "Aleatório  ·  ligado" : "Aleatório";
+                trayShuf.Text = T.Get(shuffle ? "Aleatório  ·  ligado" : "Aleatório");
                 trayShuf.Image = GlyphImg("\uE8B1", shuffle ? TrayCyan : TrayMute);
-                trayRep.Text = repeat == 0 ? "Repetir  ·  desligado" : repeat == 1 ? "Repetir  ·  todas" : "Repetir  ·  esta faixa";
+                trayRep.Text = T.Get(repeat == 0 ? "Repetir  ·  desligado" : repeat == 1 ? "Repetir  ·  todas" : "Repetir  ·  esta faixa");
                 trayRep.Image = GlyphImg(repeat == 2 ? "\uE8ED" : "\uE8EE", repeat > 0 ? TrayCyan : TrayMute);
-                trayMute.Text = muted ? "Reativar o som" : "Silenciar";
+                trayMute.Text = T.Get(muted ? "Reativar o som" : "Silenciar");
                 trayMute.Image = GlyphImg(muted ? "\uE74F" : "\uE767", muted ? TrayCyan : TrayMute);
 
                 // Windows 11: cantos arredondados e borda azul-escura (no Windows 10 simplesmente é ignorado)

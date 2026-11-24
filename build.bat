@@ -29,10 +29,10 @@ if not exist installer mkdir installer
 if not exist "publish\libvlc\win-x64" goto noportable
 powershell -NoProfile -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; [IO.Compression.ZipFile]::CreateFromDirectory('publish\libvlc\win-x64','libvlc.zip',[IO.Compression.CompressionLevel]::Optimal,$false)"
 if errorlevel 1 goto noportable
-dotnet publish -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=false -p:EmbedLibVlc=true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish-portable
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true -p:EmbedLibVlc=true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=false -o publish-portable
 if errorlevel 1 goto noportable
-copy /y "publish-portable\AzulGrooveMusic.exe" "installer\AzulGrooveMusic-Portatil-1.0.4.exe" >nul
-echo Portatil: installer\AzulGrooveMusic-Portatil-1.0.4.exe
+copy /y "publish-portable\AzulGrooveMusic.exe" "installer\AzulGrooveMusic-Portatil-1.0.6.exe" >nul
+echo Portatil: installer\AzulGrooveMusic-Portatil-1.0.6.exe
 goto portabledone
 :noportable
 echo AVISO: nao foi possivel gerar o EXE portatil
@@ -57,7 +57,7 @@ if errorlevel 1 (echo Falha ao gerar o instalador & pause & exit /b 1)
 echo.
 echo Pronto!
 echo   EXE para testar : publish\AzulGrooveMusic.exe
-echo   Portatil (EXE)  : installer\AzulGrooveMusic-Portatil-1.0.4.exe
-echo   Instalador      : installer\AzulGrooveMusic-Setup-1.0.4.exe
+echo   Portatil (EXE)  : installer\AzulGrooveMusic-Portatil-1.0.6.exe
+echo   Instalador      : installer\AzulGrooveMusic-Setup-1.0.6.exe
 explorer installer
 pause

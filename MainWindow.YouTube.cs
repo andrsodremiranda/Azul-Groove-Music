@@ -73,7 +73,7 @@ namespace AzulGroove
             ytFolder = string.IsNullOrWhiteSpace(settings.Folder)
                 ? System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "Azul Groove YouTube")
                 : settings.Folder;
-            YtFolder.Text = "Pasta: " + ytFolder;
+            YtFolder.Text = T.Get("Pasta: {0}", ytFolder);
         }
 
         void SaveYtSettings()
@@ -94,7 +94,7 @@ namespace AzulGroove
             var dialog = new OpenFolderDialog();
             if (dialog.ShowDialog() != true) return;
             ytFolder = dialog.FolderName;
-            YtFolder.Text = "Pasta: " + ytFolder;
+            YtFolder.Text = T.Get("Pasta: {0}", ytFolder);
             SaveYtSettings();
             if (watchersOn) RebuildWatchers();
             SyncYtFolderPlaylist();
@@ -228,7 +228,7 @@ namespace AzulGroove
         }
 
         // ---------- Pequenos auxiliares de tela ----------
-        void YtSay(string text) { YtStatus.Text = text; }
+        void YtSay(string text) { YtStatus.Text = T.Get(text); }
 
         // Pode ser chamado de qualquer thread: grava no arquivo na hora e põe na fila da tela (a tela lê a fila 4x por segundo)
         void YtLogLine(string line)
@@ -271,7 +271,7 @@ namespace AzulGroove
             string status;
             bool bar;
             lock (ytLock) { status = ytStatusPending; ytStatusPending = null; bar = ytBarActive; }
-            if (status != null) YtStatus.Text = status;
+            if (status != null) YtStatus.Text = T.Get(status);
             if (bar) UpdateYtBar();
         }
 
@@ -320,7 +320,7 @@ namespace AzulGroove
 
         void YtProgress(double percent, string text)
         {
-            YtStatus.Text = text;
+            YtStatus.Text = T.Get(text);
             if (percent < 0) { YtBar.IsIndeterminate = true; return; }
             YtBar.IsIndeterminate = false; YtBar.Value = Math.Max(0, Math.Min(100, percent));
         }
@@ -396,6 +396,7 @@ namespace AzulGroove
                             YtProgress(total > 0 ? done * 100.0 / total : -1, label + size);
                         }
                     }
+                    if (total > 0 && done != total) throw new IOException("Download incompleto (a conexão caiu). Tente de novo.");
                 }
             }
             File.Move(part, destination, true);
@@ -495,7 +496,7 @@ namespace AzulGroove
                 process.Start();
                 AppLog.Write("yt-dlp", "Processo iniciado (PID " + process.Id + ")");
                 // Prioridade baixa: a conversão de áudio/vídeo usa muita CPU e, sem isso, a interface do app fica pesada ou trava
-                try { process.PriorityClass = ProcessPriorityClass.BelowNormal; }
+                try { process.PriorityClass = smartFetching ? ProcessPriorityClass.Idle : ProcessPriorityClass.BelowNormal; }   // download automático (fila inteligente) só usa CPU que está sobrando
                 catch (Exception ex) { AppLog.Write("yt-dlp", "Não foi possível baixar a prioridade do processo: " + ex.Message); }
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();

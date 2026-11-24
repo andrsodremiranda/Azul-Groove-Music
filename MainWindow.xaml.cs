@@ -31,6 +31,7 @@ namespace AzulGroove
         public string Name { get; private set; }
         public string Artist { get; private set; }
         public string Album { get; private set; }
+        public string Reason { get; set; }   // por que a fila inteligente escolheu esta faixa (aparece ao passar o mouse)
         public TimeSpan Duration { get; private set; }
         public DateTime FileDate { get; private set; }
         public string Subtitle
@@ -305,6 +306,7 @@ namespace AzulGroove
         public MainWindow(string[] paths)
         {
             launchPaths = paths ?? Array.Empty<string>();
+            firstEverRun = !File.Exists(SettingsFile);   // nunca aberto neste PC: mostra a tela de boas-vindas
             savedSettings = LoadSettings();
             vol = Math.Max(0, Math.Min(100, savedSettings.Volume));
             muted = savedSettings.Muted;
@@ -312,7 +314,23 @@ namespace AzulGroove
             shuffle = savedSettings.Shuffle;
             repeat = Math.Max(0, Math.Min(2, savedSettings.Repeat));
             pendingSeek = -1;
+            StartupBoost.TuneFirstRun(prefs);
+            // O VLC carrega em segundo plano ENQUANTO o XAML da janela é lido (antes só começava depois que a janela já estava pronta)
+            vlcTask = Task.Run(CreateVlc);
             InitializeComponent();
+        }
+
+        Task<(VLC.LibVLC, VLC.MediaPlayer)> vlcTask;
+
+        (VLC.LibVLC, VLC.MediaPlayer) CreateVlc()
+        {
+            string vlcDir = ResolveLibVlcDir();   // pasta libvlc ao lado do EXE, ou o VLC embutido no EXE único
+            if (vlcDir != null) VLC.Core.Initialize(vlcDir); else VLC.Core.Initialize();
+            var vlcOptions = new List<string> { "--no-video-title-show", "--no-osd", "--no-snapshot-preview", "--no-stats", App.SafeMode ? "--avcodec-hw=none" : "--avcodec-hw=any", "--file-caching=400" };
+            if (prefs.LevelVolume) vlcOptions.AddRange(new[] { "--audio-filter=normvol", "--norm-buff-size=20", "--norm-max-level=2.0" });   // nivela o volume entre músicas
+            var engine = new VLC.LibVLC(vlcOptions.ToArray());
+            var player = new VLC.MediaPlayer(engine) { EnableMouseInput = false, EnableKeyInput = false };
+            return (engine, player);
         }
 
         async void Window_Loaded(object s, RoutedEventArgs e)
@@ -323,17 +341,25 @@ namespace AzulGroove
                 App.LogError("Startup", ex);
                 try { Toast("Erro ao iniciar: " + ex.Message); } catch { }
             }
+            finally { StartupBoost.End(); }   // abertura pronta: prioridade e memória reservada voltam ao normal
             if (prefs.AutoUpdate) _ = UpdateAutoCheckAsync();   // procura versão nova nos Releases do GitHub
+            if (prefs.AutoUpdate) _ = RefreshLanguagesAsync();   // baixa traduções novas do GitHub (idiomas.zip)
+            _ = SmartBatchLoopAsync();   // lote de músicas novas de hora em hora (se ligado em Configurações)
+            _ = ShowWelcomeIfNeededAsync();   // boas-vindas (primeira vez) ou novidades (depois de atualizar)
         }
 
         async Task StartupAsync()
         {
             // 1) Interface: tudo leve, a janela aparece na hora
+            ApplyAccent();
             if (!App.SafeMode) BuildFx();
             Intro();
             Window_StateChanged(null, EventArgs.Empty);
             toastTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1400) };
             toastTimer.Tick += (a, b) => { toastTimer.Stop(); ToastPop.IsOpen = false; };
+            Deactivated += (a, b) => { toastTimer.Stop(); ToastPop.IsOpen = false; };   // trocou de programa: o aviso não fica por cima dos outros
+            Deactivated += (a, b) => { appInactive = true; Drift(false); Fx(false); };   // fora de foco: para as animações de fundo (GPU/CPU livres para o que você está usando)
+            Activated += (a, b) => { if (!appInactive) return; appInactive = false; Window_StateChanged(null, EventArgs.Empty); };
             windowSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             windowSource?.AddHook(WindowHook);
             ApplyMediaKeys();
@@ -356,7 +382,7 @@ namespace AzulGroove
             ringSb = MakeSpin(RingRot, 2.6); discSb = MakeSpin(DiscRot, 9);
             for (int i = 0; i < NB; i++)
             {
-                bars[i] = new Rectangle { Width = 9, Height = 6, RadiusX = 4.5, RadiusY = 4.5, Margin = new Thickness(3, 0, 3, 0), VerticalAlignment = VerticalAlignment.Bottom, Fill = (Brush)FindResource("GradV") };
+                bars[i] = new Rectangle { Width = 9, Height = 6, RadiusX = 4.5, RadiusY = 4.5, Margin = new Thickness(3, 0, 3, 0), VerticalAlignment = VerticalAlignment.Bottom }; bars[i].SetResourceReference(System.Windows.Shapes.Shape.FillProperty, "GradV");
                 Bars.Children.Add(bars[i]);
             }
             radios = new[] { NavHome, NavMusic, NavVideo, NavQueue, NavNow, NavPlaylists, NavYouTube, NavArtists, NavAlbums, NavSettings, NavAbout };
@@ -377,17 +403,7 @@ namespace AzulGroove
             Navigate(0);
             _ = Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(WarmPopups));
 
-            // O motor de mídia (VLC) começa a carregar já, em paralelo com a biblioteca (antes esperava a biblioteca inteira)
-            var vlcTask = Task.Run(() =>
-            {
-                string vlcDir = ResolveLibVlcDir();   // pasta libvlc ao lado do EXE, ou o VLC embutido no EXE único
-                if (vlcDir != null) VLC.Core.Initialize(vlcDir); else VLC.Core.Initialize();
-                var vlcOptions = new List<string> { "--no-video-title-show", "--no-osd", "--no-snapshot-preview", "--no-stats", App.SafeMode ? "--avcodec-hw=none" : "--avcodec-hw=any", "--file-caching=400" };
-                if (prefs.LevelVolume) vlcOptions.AddRange(new[] { "--audio-filter=normvol", "--norm-buff-size=20", "--norm-max-level=2.0" });   // nivela o volume entre músicas
-                var engine = new VLC.LibVLC(vlcOptions.ToArray());
-                var player = new VLC.MediaPlayer(engine) { EnableMouseInput = false, EnableKeyInput = false };
-                return (engine, player);
-            });
+            // O motor de mídia (VLC) já começou a carregar no construtor (vlcTask)
 
             await LoadLibraryAsync();
             recent.Clear(); recent.AddRange(Enumerable.Reverse(lib).Take(30));
@@ -395,7 +411,7 @@ namespace AzulGroove
             LoadPlaylists();
             LoadRoots();
             SyncYtFolderPlaylist();
-            LoadPlays(); ApplyPlayCounts(); RefreshSmartPlaylists(); UpdateSmartButton();
+            LoadPlays(); LoadFavs(); ApplyPlayCounts(); RefreshSmartPlaylists(); UpdateSmartButton();
             RefreshPlaylistTracks();
 
             // 2) Motor de mídia (VLC): já estava carregando em segundo plano
@@ -404,8 +420,9 @@ namespace AzulGroove
             catch (Exception ex)
             {
                 App.LogError("VLC", ex);
-                MessageBox.Show("Não foi possível iniciar o motor de mídia (VLC):\n" + ex.Message + "\n\nVerifique se a pasta \"libvlc\" está junto do AzulGrooveMusic.exe.",
-                    "Azul Groove Music", MessageBoxButton.OK, MessageBoxImage.Error);
+                BrandedAsk(T.Get("Não foi possível iniciar o motor de mídia"),
+                    T.Get("Erro do VLC: {0}", ex.Message) + "\n\n" + T.Get("Verifique se a pasta \"libvlc\" está junto do AzulGrooveMusic.exe."),
+                    T.Get("Fechar"), null, "\uE783", true);
                 Close(); return;
             }
             _lib = l2; _mp = m2;
@@ -418,7 +435,7 @@ namespace AzulGroove
             _mp.Paused += (a, b) => UI(() => { SetPlayState(false); SaveSettings(true); });
             _mp.Stopped += (a, b) => UI(() => SetPlayState(false));
             _mp.EndReached += (a, b) => UI(() => Step(1, true));
-            _mp.EncounteredError += (a, b) => UI(() => NowTitle.Text = "Não foi possível reproduzir este arquivo");
+            _mp.EncounteredError += (a, b) => UI(() => NowTitle.Text = T.Get("Não foi possível reproduzir este arquivo"));
             if (vpanel != null && vpanel.IsHandleCreated) _mp.Hwnd = vpanel.Handle;
             InitializeAudioOptions();
             if (pendingItem != null) { var it0 = pendingItem; pendingItem = null; Play(it0); }
@@ -467,11 +484,11 @@ namespace AzulGroove
 
         void ApplyPlaybackOptions()
         {
-            ShufBtn.Foreground = shuffle ? (Brush)FindResource("Cyan") : (Brush)FindResource("Foam");
-            ShufBtn.Background = shuffle ? ActiveBg : Brushes.Transparent;
+            SetAccentOn(ShufBtn, shuffle);
+            SetAccentBg(ShufBtn, shuffle);
             RepBtn.Content = repeat == 2 ? "\uE8ED" : "\uE8EE";
-            RepBtn.Foreground = repeat > 0 ? (Brush)FindResource("Cyan") : (Brush)FindResource("Foam");
-            RepBtn.Background = repeat > 0 ? ActiveBg : Brushes.Transparent;
+            SetAccentOn(RepBtn, repeat > 0);
+            SetAccentBg(RepBtn, repeat > 0);
             SpdBtn.Content = speed.ToString("0.##") + "x";
             MarkSpeed();
         }
@@ -480,7 +497,7 @@ namespace AzulGroove
         {
             audioOptionsReady = false;
             AudioOutputBox.Items.Clear();
-            AudioOutputBox.Items.Add(new AudioDeviceChoice { Name = "Padrão do sistema", DeviceId = null });
+            AudioOutputBox.Items.Add(new AudioDeviceChoice { Name = T.Get("Padrão do sistema"), DeviceId = null });
             try
             {
                 var devices = _mp.AudioOutputDeviceEnum;
@@ -879,6 +896,7 @@ namespace AzulGroove
                 trayIcon.Visible = true;
                 Hide();
                 Drift(false); Fx(false); VizOn(false); SyncTimer(); // escondido na bandeja: nada de animação nem timer
+                Task.Delay(3000).ContinueWith(_ => StartupBoost.TrimMemory());   // na bandeja: devolve a memória sobrando ao Windows
                 return;
             }
             Drift(WindowState != WindowState.Minimized && page != 4);
@@ -892,6 +910,7 @@ namespace AzulGroove
         {
             if (e.Key == Key.F && (Keyboard.Modifiers & ModifierKeys.Control) != 0) { Search.Focus(); Search.SelectAll(); e.Handled = true; return; }   // Ctrl+F: ir para a busca
             if (Keyboard.FocusedElement is TextBox) { if (e.Key == Key.Escape) { Keyboard.ClearFocus(); } return; }
+            if (HandleExtraKeys(e)) return;   // Ctrl+Q/L/M/D, Shift+←/→, 0–9 e H
             switch (e.Key)
             {
                 case Key.Space: Play_Click(null, null); e.Handled = true; break;
@@ -920,6 +939,8 @@ namespace AzulGroove
         void Window_Closing(object s, CancelEventArgs e)
         {
             AppLog.Write("SESSAO", "Janela principal fechando. Quem pediu o fechamento:" + Environment.NewLine + Environment.StackTrace);
+            appClosing = true;
+            try { mini?.Close(); } catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Could not close mini player: " + ex.Message); }
             settingsTimer?.Stop();
             StopFolderWatching();
             try { ytDlCts.Cancel(); } catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Could not stop YouTube downloads: " + ex.Message); }

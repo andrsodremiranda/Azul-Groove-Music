@@ -67,7 +67,9 @@ namespace AzulGroove
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            StartupBoost.ApplyRenderTuning();   // PC fraco: animações limitadas a 30 fps (precisa vir antes de qualquer animação)
             base.OnStartup(e);
+            T.Init(AppPrefs.Load().Language);   // idioma da interface (antes de qualquer janela ou aviso)
             SafeMode = e.Args.Any(a => string.Equals(a, "--safe", StringComparison.OrdinalIgnoreCase));
             string[] mediaArgs = e.Args.Where(a => !a.StartsWith("--", StringComparison.Ordinal)).ToArray();
             DispatcherUnhandledException += (s, a) => { LogError("UI", a.Exception); a.Handled = true; };
@@ -88,7 +90,7 @@ namespace AzulGroove
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Azul Groove Music já está aberto, mas não foi possível encaminhar o arquivo:\n" + ex.Message,
+                    MessageBox.Show(T.Get("Azul Groove Music já está aberto, mas não foi possível encaminhar o arquivo:\n{0}", ex.Message),
                         "Azul Groove Music", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 Shutdown();
@@ -96,6 +98,7 @@ namespace AzulGroove
             }
 
             isPrimary = true;
+            StartupBoost.Begin();   // boost só durante a abertura; MainWindow chama StartupBoost.End() quando termina
             AppLog.StartSession();
             bool invariantMode = AppContext.TryGetSwitch("System.Globalization.Invariant", out bool invariantOn) && invariantOn;
             AppLog.Write("SESSAO", "Idioma do sistema: " + System.Globalization.CultureInfo.CurrentCulture.Name + (invariantMode ? " | ⚠ GLOBALIZAÇÃO INVARIÁVEL ATIVA (o WPF não funciona assim)" : " | globalização normal"));

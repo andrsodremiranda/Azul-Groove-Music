@@ -82,7 +82,7 @@ namespace AzulGroove
             progress?.Report(new ScanProgress { Total = files.Count, Discovering = false });
             var results = new Item[files.Count];
             int done = 0;
-            var options = new ParallelOptions { MaxDegreeOfParallelism = Math.Max(2, Math.Min(4, Environment.ProcessorCount / 2)) };
+            var options = new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, Math.Min(4, Environment.ProcessorCount / 2)) };
             Parallel.For(0, files.Count, options, i =>
             {
                 string path = files[i];
@@ -160,7 +160,7 @@ namespace AzulGroove
             {
                 ScanStatus.Visibility = Visibility.Visible;
                 ScanBar.IsIndeterminate = true;
-                ScanText.Text = "Localizando arquivos...";
+                ScanText.Text = T.Get("Localizando arquivos...");
                 var progress = new Progress<ScanProgress>(UpdateScanProgress);
                 List<Item> scanned = await Task.Run(() => ScanPaths(requestedPaths, progress));
                 Item first = null;
@@ -366,7 +366,7 @@ namespace AzulGroove
 
         void RefreshQueue()
         {
-            QueueSummary.Text = queue.Count == 1 ? "1 faixa na fila" : queue.Count + " faixas na fila";
+            QueueSummary.Text = T.Get(queue.Count == 1 ? "1 faixa na fila" : queue.Count + " faixas na fila");
             QueueEmpty.Visibility = queue.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
@@ -428,7 +428,7 @@ namespace AzulGroove
         }
 
         // Ordem da lista: playlists do usuário, depois a pasta "Azul Groove YouTube", e por fim as automáticas ★
-        static readonly string[] SmartOrder = { "top", "played", "recent", "forgotten", "never", "auto" };
+        static readonly string[] SmartOrder = { "fav", "top", "played", "recent", "forgotten", "never", "auto" };
 
         int PlaylistInsertIndex(SavedPlaylist playlist)
         {
@@ -492,31 +492,21 @@ namespace AzulGroove
 
         string PromptPlaylistName(string title = "Nova playlist", string initial = "")
         {
-            var dialog = new Window
-            {
-                Title = title,
-                Owner = this,
-                Width = 360,
-                Height = 160,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                ResizeMode = ResizeMode.NoResize,
-                WindowStyle = WindowStyle.ToolWindow,
-                Background = (Brush)FindResource("Abyss"),
-                Foreground = (Brush)FindResource("Foam")
-            };
-            var layout = new StackPanel { Margin = new Thickness(18) };
-            layout.Children.Add(new TextBlock { Text = "Nome da playlist", Margin = new Thickness(0, 0, 0, 8) });
-            var input = new TextBox { MinWidth = 280, Padding = new Thickness(7), Text = initial ?? string.Empty };
+            var layout = new StackPanel { Margin = new Thickness(30, 8, 30, 26) };
+            layout.Children.Add(new TextBlock { Text = title, FontSize = 22, FontWeight = FontWeights.SemiBold });
+            layout.Children.Add(BrandedLabel("Nome da playlist"));
+            var input = BrandedTextBox(initial ?? string.Empty);
             layout.Children.Add(input);
-            var actions = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 12, 0, 0) };
             string result = null;
-            var save = new Button { Content = "Salvar", IsDefault = true, MinWidth = 76, Margin = new Thickness(0, 0, 8, 0) };
+            Window dialog = null;
+            var actions = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 24, 0, 0) };
+            var cancel = BrandedButton("Cancelar", false, false); cancel.IsCancel = true; cancel.Margin = new Thickness(0, 0, 10, 0);
+            var save = BrandedButton("Salvar", true, false); save.IsDefault = true;
             save.Click += (sender, args) => { result = input.Text; dialog.DialogResult = true; };
-            var cancel = new Button { Content = "Cancelar", IsCancel = true, MinWidth = 76 };
-            actions.Children.Add(save);
-            actions.Children.Add(cancel);
+            actions.Children.Add(cancel); actions.Children.Add(save);
             layout.Children.Add(actions);
-            dialog.Content = layout;
+            dialog = NewBrandedWindow(440, layout, out Button dialogX);
+            dialog.Title = title;
             dialog.Loaded += (sender, args) => { input.Focus(); input.SelectAll(); };
             dialog.ShowDialog();
             return result;

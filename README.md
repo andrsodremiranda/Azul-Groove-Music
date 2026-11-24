@@ -2,7 +2,7 @@
 
 Player de música e vídeo para Windows, feito em C# (WPF) com visual azul, **fila inteligente** que aprende com o seu uso e integração com o YouTube / YouTube Music.
 
-> Versão atual: **1.0.4**
+> Versão atual: **1.0.6**
 
 ---
 
@@ -17,6 +17,9 @@ Player de música e vídeo para Windows, feito em C# (WPF) com visual azul, **fi
 - Minimiza para a bandeja, inicia com o Windows e usa teclas de mídia em qualquer lugar
 - Playlists salvas, playlists automáticas (★) e exportação para `.m3u`
 - Modo leve e animações de fundo opcionais
+- **Letras sincronizadas** (`.lrc` ao lado da música), **favoritos ♥**, **mini player** (`Ctrl+M`), transição suave entre músicas e cor de destaque
+- Achar músicas duplicadas, importar/exportar playlists `.m3u` e resumo de uso (mais ouvidas, artistas, horários)
+- **Idiomas**: português, inglês e espanhol (Configurações → Idioma). Novas traduções são baixadas do GitHub sem precisar atualizar o app (veja `LEIAME-IDIOMAS.md`)
 
 **YouTube**
 - Sincroniza playlists do YouTube e do YouTube Music (links, um por linha)
@@ -42,6 +45,25 @@ A cada troca de música, o app completa a fila sozinho com base no que você ouv
 
 Dá para ligar/desligar a música automática em **Configurações** ou pelo botão na página **Playlists**.
 
+Na fila, passe o mouse numa música sugerida para ver **por que ela foi escolhida**. No botão direito de qualquer música dá para **não sugerir mais** a faixa ou o artista (e zerar os bloqueios em Configurações). O limite de músicas baixadas sozinhas (20 a 200) e a limpeza delas também ficam em Configurações.
+
+## ⌨️ Atalhos
+
+| Tecla | Ação |
+|---|---|
+| `Espaço` | Tocar / pausar |
+| `←` `→` | Voltar / avançar 5 s (com `Shift`: 30 s) |
+| `J` `L` | Voltar 10 s / avançar 30 s |
+| `0`–`9` | Pular para 0%–90% da música |
+| `N` `P` | Próxima / anterior |
+| `↑` `↓` | Volume |
+| `M` `S` `R` `F` | Mudo, aleatório, repetir, tela cheia |
+| `H` ou `Ctrl+D` | Favoritar a música atual |
+| `Ctrl+Q` | Abrir a fila |
+| `Ctrl+L` | Abrir Tocando agora (letra) |
+| `Ctrl+M` | Mini player |
+| `Ctrl+F` | Ir para a busca |
+
 ## 📦 Download
 
 Pegue a versão mais recente na aba **Releases**:
@@ -50,11 +72,13 @@ Pegue a versão mais recente na aba **Releases**:
 
 Requisitos: Windows 10/11 64 bits. O .NET já vem incluso no app.
 
+**Versão leve (opcional):** rode `build-leve.bat` para gerar `AzulGrooveMusic-Leve-Setup-x.y.z.exe`, bem menor porque o .NET não vai dentro. Ela precisa do [.NET 8 Desktop Runtime (x64)](https://dotnet.microsoft.com/download/dotnet/8.0/runtime) no PC; o instalador confere e abre a página de download se faltar. O nome do arquivo não começa com `AzulGrooveMusic-Setup`, então o atualizador automático do app não o confunde com o instalador normal.
+
 ## 🔄 Atualizações
 
 Ao abrir, o app consulta os [Releases](https://github.com/andrsodremiranda/Azul-Groove-Music/releases) deste repositório. Se houver uma versão mais nova, ele oferece baixar e instalar.
 
-- Ele procura sempre o arquivo `AzulGrooveMusic-Setup*.exe` anexado ao release (por exemplo, `AzulGrooveMusic-Setup-1.0.4.exe`). Use a tag `v1.0.4` no release.
+- Ele procura sempre o arquivo `AzulGrooveMusic-Setup*.exe` anexado ao release (por exemplo, `AzulGrooveMusic-Setup-1.0.6.exe`). Use a tag `v1.0.6` no release.
 - Dá para desligar em **Sobre → Atualizações → Buscar atualizações ao abrir**, ou buscar manualmente pelo botão "Buscar atualizações agora" (menu lateral **Sobre**, que também mostra a versão, os componentes, os créditos e a licença de uso).
 - O download só é aceito se vier deste repositório, e o app confere o hash SHA-256 quando o GitHub o informa.
 
@@ -92,6 +116,9 @@ dotnet publish -c Release -r win-x64 --self-contained true -o publish
 | `MainWindow.Settings.cs` | Configurações do usuário |
 | `MainWindow.Tray.cs` | Bandeja do sistema e notificações |
 | `MainWindow.Animations.cs` | Animações |
+| `MainWindow.V105.cs` | Letras, favoritos, fade, mini player, duplicadas, importar .m3u, resumo de uso, atalhos extras |
+| `MainWindow.Welcome.cs` | Tela de boas-vindas / novidades da versão (histórico `Changelog` no topo do arquivo) |
+| `StartupBoost.cs` | Reforço só na abertura e ajustes para PC fraco |
 | `AppLog.cs` | Log de erros |
 | `AzulGrooveMusic.iss` | Script do instalador (Inno Setup) |
 

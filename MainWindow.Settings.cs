@@ -27,8 +27,24 @@ namespace AzulGroove
         public bool SmartQueue { get; set; } = true;       // fila inteligente: a cada troca de música a fila se completa sozinha pelo seu gosto
         public int SmartAhead { get; set; } = 2;           // quantas músicas à frente a fila inteligente mantém
         public bool SmartDownload { get; set; } = true;    // a fila inteligente também baixa músicas novas do YouTube pelo seu gosto (usa a internet)
+        public bool AutoInstall { get; set; } = true;      // quando acha versão nova, baixa e instala sozinho em modo silencioso e reinicia o app
         public bool AutoUpdate { get; set; } = true;       // ao abrir o app, procura versão nova nos Releases do GitHub
         public string UpdateSkipped { get; set; } = "";    // versão para a qual você respondeu "Não" (não pergunta de novo sozinho)
+        public int FadeMs { get; set; } = 0;               // transição suave entre músicas (0 = desligada)
+        public bool Lyrics { get; set; } = true;           // letras sincronizadas (.lrc) na página Tocando agora
+        public bool SmartBatch { get; set; } = false;      // baixa um lote grande de músicas novas de hora em hora (fila inteligente)
+        public int SmartBatchCount { get; set; } = 25;     // quantas músicas por lote
+        public long SmartBatchLast { get; set; } = 0;      // quando o último lote rodou (ticks UTC)
+        public int SmartMaxFiles { get; set; } = 60;       // limite de músicas baixadas sozinhas pela fila inteligente
+        public int Accent { get; set; } = 0;               // cor de destaque (índice em Accents)
+        public bool AutoTuned { get; set; } = false;       // a primeira abertura já ajustou o app ao seu PC (modo leve em PC fraco)
+        public string LastSeenVersion { get; set; } = "";  // última versão cuja tela de boas-vindas/novidades já foi mostrada
+        public string Language { get; set; } = "";         // idioma da interface ("" = automático pelo Windows; pt, en, es...)
+        public int TasteVersion { get; set; } = 0;         // versão do assistente de gostos já respondida/pulada (0 = nunca)
+        public System.Collections.Generic.List<string> TasteGenres { get; set; } = new System.Collections.Generic.List<string>();    // estilos marcados
+        public System.Collections.Generic.List<string> TasteArtists { get; set; } = new System.Collections.Generic.List<string>();   // artistas favoritos
+        public System.Collections.Generic.List<string> TasteLangs { get; set; } = new System.Collections.Generic.List<string>();     // idiomas das músicas
+        public int TasteDiscovery { get; set; } = 1;       // 0 = só conhecidas, 1 = equilibrado, 2 = descobrir
         public bool AutoQueueNew { get; set; } = true;     // músicas novas (download do YouTube / pasta da biblioteca) entram sozinhas na fila
 
         static readonly string PrefsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AzulGroove", "prefs.json");
@@ -102,6 +118,26 @@ namespace AzulGroove
             }
         }
 
+        // ---------- Abas das Configurações (Aparência, Reprodução, Fila inteligente, Biblioteca, Sistema, Dados) ----------
+        int settingsTab;
+
+        void SettingsTab_Checked(object s, RoutedEventArgs e)
+        {
+            if (SetPgData == null) return;   // ainda montando a janela
+            if (!int.TryParse(((RadioButton)s).Uid, out int i)) return;
+            ShowSettingsTab(i, true);
+        }
+
+        void ShowSettingsTab(int i, bool animate)
+        {
+            StackPanel[] pages = { SetPgAppearance, SetPgPlayback, SetPgSmart, SetPgLibrary, SetPgSystem, SetPgData };
+            if (i < 0 || i >= pages.Length) i = 0;
+            settingsTab = i;
+            for (int k = 0; k < pages.Length; k++) pages[k].Visibility = k == i ? Visibility.Visible : Visibility.Collapsed;
+            SettingsScroll?.ScrollToTop();
+            if (animate) Anim(pages[i], OpacityProperty, 0, 1, 200);
+        }
+
         void RefreshSettingsView()
         {
             if (PrefAnim == null) return;
@@ -113,11 +149,14 @@ namespace AzulGroove
             PrefAutoQueue.IsChecked = prefs.AutoQueueNew;
             PrefSmart.IsChecked = prefs.SmartQueue;
             PrefSmartDl.IsChecked = prefs.SmartDownload;
-            PrefSmartAheadBtn.Content = "Músicas à frente: " + prefs.SmartAhead;
+            PrefSmartBatch.IsChecked = prefs.SmartBatch;
+            PrefSmartBatchBtn.Content = T.Get("Músicas por lote: {0}", prefs.SmartBatchCount);
+            PrefSmartAheadBtn.Content = T.Get("Músicas à frente: {0}", prefs.SmartAhead);
             PrefTray.IsChecked = prefs.MinimizeToTray;
             PrefYtSearch.IsChecked = prefs.YtSearch;
-            PrefYtFolderTxt.Text = "Downloads do YouTube: " + ytFolder;
+            PrefYtFolderTxt.Text = T.Get("Downloads do YouTube: {0}", ytFolder);
             PrefStartup.IsChecked = GetAutoStart();
+            RefreshV105Settings();
         }
 
         // Liga/desliga as animações de fundo na hora, respeitando a página e o estado da janela
@@ -136,7 +175,8 @@ namespace AzulGroove
         }
 
         // Animações de fundo só rodam se estiverem ligadas e o modo leve estiver desligado
-        bool AnimationsAllowed => prefs.Animations && !prefs.LightMode;
+        bool appInactive;   // a janela perdeu o foco (você está em outro programa): animações decorativas ficam paradas
+        bool AnimationsAllowed => prefs.Animations && !prefs.LightMode && !appInactive;
 
         void PrefLight_Click(object s, RoutedEventArgs e)
         {
@@ -230,7 +270,7 @@ namespace AzulGroove
             sleepIdx = (sleepIdx + 1) % SleepSteps.Length;
             int min = SleepSteps[sleepIdx];
             sleepTimer?.Stop();
-            if (min == 0) { SleepTxt.Text = "Temporizador: desligado"; Toast("Temporizador desligado"); return; }
+            if (min == 0) { SleepTxt.Text = T.Get("Temporizador: desligado"); Toast("Temporizador desligado"); return; }
             sleepEnd = DateTime.UtcNow.AddMinutes(min);
             if (sleepTimer == null)
             {
@@ -238,17 +278,17 @@ namespace AzulGroove
                 sleepTimer.Tick += SleepTick;
             }
             sleepTimer.Start();
-            SleepTxt.Text = "Temporizador: " + min + " min";
+            SleepTxt.Text = T.Get("Temporizador: {0} min", min);
             Toast("Pausa automática em " + min + " min");
         }
 
         void SleepTick(object s, EventArgs e)
         {
             TimeSpan left = sleepEnd - DateTime.UtcNow;
-            if (left > TimeSpan.Zero) { SleepTxt.Text = "Temporizador: " + (int)Math.Ceiling(left.TotalMinutes) + " min"; return; }
+            if (left > TimeSpan.Zero) { SleepTxt.Text = T.Get("Temporizador: {0} min", (int)Math.Ceiling(left.TotalMinutes)); return; }
             sleepTimer.Stop();
             sleepIdx = 0;
-            SleepTxt.Text = "Temporizador: desligado";
+            SleepTxt.Text = T.Get("Temporizador: desligado");
             if (_mp != null && _mp.IsPlaying) _mp.Pause();
             Toast("Temporizador: música pausada");
         }
@@ -263,7 +303,7 @@ namespace AzulGroove
         void PrefYtFolder_Click(object s, RoutedEventArgs e)
         {
             YtFolder_Click(s, e);
-            PrefYtFolderTxt.Text = "Downloads do YouTube: " + ytFolder;
+            PrefYtFolderTxt.Text = T.Get("Downloads do YouTube: {0}", ytFolder);
         }
 
         void PrefStartup_Click(object s, RoutedEventArgs e)
@@ -286,13 +326,14 @@ namespace AzulGroove
 
         void PrefReset_Click(object s, RoutedEventArgs e)
         {
-            prefs.Animations = true; prefs.MinimizeToTray = true; prefs.ResumePlayback = true; prefs.YtSearch = false; prefs.GlobalMediaKeys = true; prefs.LevelVolume = false; prefs.LightMode = false; prefs.AutoQueueNew = true; prefs.SmartQueue = true; prefs.SmartAhead = 2; prefs.SmartDownload = true; prefs.AutoUpdate = true; prefs.UpdateSkipped = "";
+            prefs.Animations = true; prefs.MinimizeToTray = true; prefs.ResumePlayback = true; prefs.YtSearch = false; prefs.GlobalMediaKeys = true; prefs.LevelVolume = false; prefs.LightMode = false; prefs.AutoQueueNew = true; prefs.SmartQueue = true; prefs.SmartAhead = 2; prefs.SmartDownload = true; prefs.AutoUpdate = true; prefs.AutoInstall = true; prefs.UpdateSkipped = ""; prefs.FadeMs = 0; prefs.Lyrics = true; prefs.SmartMaxFiles = 60; prefs.SmartBatch = false; prefs.SmartBatchCount = 25; prefs.Accent = 0;
             prefs.Save();
             SetAutoStart(false);
             RefreshSettingsView();
             ApplyAnimPrefs();
             YtSearchSchedule();
             ApplyMediaKeys();
+            V105AfterReset();
             Toast("Configurações restauradas");
         }
     }

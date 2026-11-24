@@ -162,11 +162,11 @@ namespace AzulGroove
                 ytResults.Clear();
                 foreach (var c in cached) ytResults.Add(new YtResult { Id = c.Id, Title = c.Title, Channel = c.Channel, Duration = c.Duration });
                 ytSearchLast = q;
-                YtSearchStatus.Text = ytResults.Count + " resultados (salvos)";
+                YtSearchStatus.Text = T.Get(ytResults.Count + " resultados (salvos)");
                 YtPrefetch(ytResults.Select(x => x.Id).ToList());
                 return;
             }
-            YtSearchStatus.Text = "Buscando no YouTube...";
+            YtSearchStatus.Text = T.Get("Buscando no YouTube...");
             ytSearchTimer.Stop(); ytSearchTimer.Start();
         }
 
@@ -174,20 +174,20 @@ namespace AzulGroove
         {
             string q = Search.Text.Trim();
             if (!prefs.YtSearch || q.Length < 2 || q == ytSearchLast) return;
-            if (ytBusy) { YtSearchStatus.Text = "Aguarde a sincronização do YouTube terminar"; return; }
+            if (ytBusy) { YtSearchStatus.Text = T.Get("Aguarde a sincronização do YouTube terminar"); return; }
             YtSearchCancel();
             var cts = ytSearchCts = CancellationTokenSource.CreateLinkedTokenSource(ytDlCts.Token);
             CancellationToken ct = cts.Token;
-            YtSearchStatus.Text = "Buscando no YouTube...";
+            YtSearchStatus.Text = T.Get("Buscando no YouTube...");
             try
             {
                 string ytdlp = System.IO.Path.Combine(ToolsDir, "yt-dlp.exe");
                 if (!File.Exists(ytdlp))   // só prepara as ferramentas na primeira vez (a atualização diária fica para o download)
                 {
-                    YtSearchStatus.Text = "Preparando o YouTube pela primeira vez (pode demorar)...";
+                    YtSearchStatus.Text = T.Get("Preparando o YouTube pela primeira vez (pode demorar)...");
                     await EnsureYtToolsAsync(ct, false);
                     ct.ThrowIfCancellationRequested();
-                    YtSearchStatus.Text = "Buscando no YouTube...";
+                    YtSearchStatus.Text = T.Get("Buscando no YouTube...");
                 }
 
                 var found = new List<YtResult>();
@@ -218,7 +218,7 @@ namespace AzulGroove
                         if (ct.IsCancellationRequested || Search.Text.Trim() != q) return;
                         if (first) { first = false; ytResults.Clear(); }
                         ytResults.Add(r);
-                        YtSearchStatus.Text = ytResults.Count + " resultados";
+                        YtSearchStatus.Text = T.Get(ytResults.Count + " resultados");
                     });
                 }, YtErrLine, ct);
                 ct.ThrowIfCancellationRequested();
@@ -233,14 +233,14 @@ namespace AzulGroove
                 }
                 ytSearchLast = q;
                 StoreYtCache(q, final);
-                YtSearchStatus.Text = final.Count == 0 ? "Nada encontrado no YouTube" : final.Count + " resultados";
+                YtSearchStatus.Text = T.Get(final.Count == 0 ? "Nada encontrado no YouTube" : final.Count + " resultados");
                 YtPrefetch(final.Select(x => x.Id));
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 App.LogError("Busca no YouTube", ex);
-                if (!ct.IsCancellationRequested) YtSearchStatus.Text = "Não foi possível buscar no YouTube (sem internet? tente atualizar pela página YouTube)";
+                if (!ct.IsCancellationRequested) YtSearchStatus.Text = T.Get("Não foi possível buscar no YouTube (sem internet? tente atualizar pela página YouTube)");
             }
         }
 

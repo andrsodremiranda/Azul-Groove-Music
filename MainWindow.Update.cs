@@ -27,20 +27,20 @@ namespace AzulGroove
         const string UpdateAssetPrefix = "AzulGrooveMusic-Setup";
 
         static readonly HttpClient updHttp = CreateUpdHttp(TimeSpan.FromSeconds(20));
-        static readonly HttpClient updDownload = CreateUpdHttp(System.Threading.Timeout.InfiniteTimeSpan);
+        static readonly HttpClient updDownload = CreateUpdHttp(System.Threading.Timeout.InfiniteTimeSpan, true);
         bool updBusy;
 
         sealed class UpdateInfo
         {
             public Version Version;
-            public string Tag, AssetName, AssetUrl, Sha256;
+            public string Tag, AssetName, AssetUrl, Sha256, Notes;
         }
 
-        static HttpClient CreateUpdHttp(TimeSpan timeout)
+        static HttpClient CreateUpdHttp(TimeSpan timeout, bool binary = false)
         {
             var c = new HttpClient { Timeout = timeout };
             c.DefaultRequestHeaders.UserAgent.ParseAdd("AzulGrooveMusic/" + UpdCurrent().ToString(3));
-            c.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
+            c.DefaultRequestHeaders.Accept.ParseAdd(binary ? "application/octet-stream" : "application/vnd.github+json");   // baixar o .exe: não pede "JSON da API" a um arquivo
             return c;
         }
 
@@ -53,7 +53,7 @@ namespace AzulGroove
             return m.Success && Version.TryParse(m.Value, out Version v) ? UpdNormalize(v) : null;
         }
 
-        void SetUpdStatus(string text) { if (UpdStatusTxt != null) UpdStatusTxt.Text = text; }
+        void SetUpdStatus(string text) { if (UpdStatusTxt != null) UpdStatusTxt.Text = T.Get(text); }
 
         async Task<UpdateInfo> UpdFetchLatestAsync()
         {
@@ -68,6 +68,7 @@ namespace AzulGroove
                     Version v = UpdParse(tag);
                     if (v == null) return null;
                     var info = new UpdateInfo { Version = v, Tag = tag };
+                    if (root.TryGetProperty("body", out JsonElement notes) && notes.ValueKind == JsonValueKind.String) info.Notes = notes.GetString();
                     if (root.TryGetProperty("assets", out JsonElement assets) && assets.ValueKind == JsonValueKind.Array)
                     {
                         foreach (JsonElement a in assets.EnumerateArray())
@@ -89,7 +90,13 @@ namespace AzulGroove
         // Chamado ao abrir o app: espera a janela terminar de carregar e consulta em segundo plano
         async Task UpdateAutoCheckAsync()
         {
-            try { await Task.Delay(6000); await UpdateCheckAsync(false); }
+            try
+            {
+                await Task.Delay(StartupBoost.IsLowEnd ? 20000 : 6000); await UpdateCheckAsync(false);
+                // Com a instalação automática ligada, continua olhando a cada 30 min enquanto o app está aberto
+                // (assim a versão nova do dia do lançamento chega mesmo com o app aberto desde o dia anterior)
+                while (prefs.AutoUpdate && prefs.AutoInstall) { await Task.Delay(TimeSpan.FromMinutes(30)); await UpdateCheckAsync(false); }
+            }
             catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Auto update check failed: " + ex.Message); }
         }
 
@@ -97,6 +104,7 @@ namespace AzulGroove
         {
             if (updBusy) return;
             updBusy = true;
+            UpdCleanup();
             try
             {
                 if (manual) SetUpdStatus("Procurando atualizações…");
@@ -115,18 +123,10 @@ namespace AzulGroove
                     return;
                 }
                 SetUpdStatus("Nova versão disponível: " + info.Version.ToString(3) + " (você tem " + current.ToString(3) + ").");
+                if (!manual && prefs.AutoInstall && !string.IsNullOrEmpty(info.Sha256)) { await UpdSilentInstallAsync(info); return; }   // baixa e instala sozinho, sem perguntar
                 if (!manual && string.Equals(prefs.UpdateSkipped, info.Tag, StringComparison.OrdinalIgnoreCase)) return;   // você já disse "agora não" para esta
 
-                MessageBoxResult answer = MessageBox.Show(this,
-                    "Nova versão do Azul Groove Music disponível: " + info.Version.ToString(3) + "\n(você está na " + current.ToString(3) + ")\n\n" +
-                    "Baixar e instalar agora?\n\nSim: baixa e abre o instalador (o app fecha).\nNão: não perguntar de novo para esta versão (dá para atualizar depois em Configurações).",
-                    "Atualização disponível", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                if (answer != MessageBoxResult.Yes)
-                {
-                    prefs.UpdateSkipped = info.Tag; prefs.Save();
-                    return;
-                }
-                await UpdInstallAsync(info);
+                await UpdPromptAsync(info, current);
             }
             catch (Exception ex)
             {
@@ -136,63 +136,19 @@ namespace AzulGroove
             finally { updBusy = false; }
         }
 
-        async Task UpdInstallAsync(UpdateInfo info)
-        {
-            string dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AzulGrooveUpdate");
-            Directory.CreateDirectory(dir);
-            string file = System.IO.Path.Combine(dir, System.IO.Path.GetFileName(info.AssetName));
-            try
-            {
-                using (HttpResponseMessage resp = await updDownload.GetAsync(info.AssetUrl, HttpCompletionOption.ResponseHeadersRead))
-                {
-                    resp.EnsureSuccessStatusCode();
-                    long total = resp.Content.Headers.ContentLength ?? -1;
-                    using (Stream src = await resp.Content.ReadAsStreamAsync())
-                    using (FileStream dst = File.Create(file))
-                    {
-                        byte[] buf = new byte[81920];
-                        long done = 0; int n, last = -1;
-                        while ((n = await src.ReadAsync(buf, 0, buf.Length)) > 0)
-                        {
-                            await dst.WriteAsync(buf, 0, n);
-                            done += n;
-                            if (total > 0)
-                            {
-                                int pct = (int)(done * 100 / total);
-                                if (pct != last && pct % 5 == 0) { last = pct; SetUpdStatus("Baixando atualização… " + pct + "%"); Toast("Baixando atualização… " + pct + "%"); }
-                            }
-                        }
-                    }
-                    if (total > 0 && new FileInfo(file).Length != total) throw new IOException("Download incompleto.");
-                }
-                if (!string.IsNullOrEmpty(info.Sha256))   // confere a integridade quando o GitHub informa o hash
-                {
-                    string hash;
-                    using (var sha = SHA256.Create())
-                    using (FileStream fs = File.OpenRead(file))
-                        hash = BitConverter.ToString(sha.ComputeHash(fs)).Replace("-", string.Empty);
-                    if (!string.Equals(hash, info.Sha256, StringComparison.OrdinalIgnoreCase)) throw new IOException("O arquivo baixado não confere com o hash do GitHub.");
-                }
-                SetUpdStatus("Abrindo o instalador…");
-                Process.Start(new ProcessStartInfo(file) { UseShellExecute = true });
-                Close();   // fecha o app para o instalador poder atualizar os arquivos
-            }
-            catch (Exception ex)
-            {
-                try { if (File.Exists(file)) File.Delete(file); } catch (Exception ex2) { System.Diagnostics.Trace.WriteLine("Could not delete update file: " + ex2.Message); }
-                App.LogError("Atualização", ex);
-                SetUpdStatus("Falha ao baixar a atualização: " + ex.Message);
-                MessageBox.Show(this, "Não foi possível baixar a atualização:\n" + ex.Message + "\n\nVocê pode baixar manualmente em:\n" + UpdateReleasesUrl,
-                    "Atualização", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-
         // ---------- Página "Sobre" ----------
         void RefreshAboutView()
         {
             Version v = Assembly.GetExecutingAssembly().GetName().Version;
-            AboutVersionTxt.Text = "Versão " + (v != null ? v.ToString(3) : "?");
+            AboutVersionTxt.Text = T.Get("Versão {0}", v != null ? v.ToString(3) : "?");
             PrefUpdate.IsChecked = prefs.AutoUpdate;
+            PrefAutoInstall.IsChecked = prefs.AutoInstall;
+        }
+
+        void PrefAutoInstall_Click(object s, RoutedEventArgs e)
+        {
+            prefs.AutoInstall = ((CheckBox)s).IsChecked == true;
+            prefs.Save();
         }
 
         void PrefUpdate_Click(object s, RoutedEventArgs e)

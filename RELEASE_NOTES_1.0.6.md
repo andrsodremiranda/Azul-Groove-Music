@@ -1,0 +1,25 @@
+## Novidades da 1.0.6
+
+- Novo: "Baixar em lote a cada hora" na fila inteligente: de hora em hora baixa de uma vez 10, 25, 50 ou 100 músicas novas pelo seu gosto, sem mexer na fila (Configurações → Fila inteligente). O limite de músicas automáticas agora também pode ser de 500 arquivos
+- Resumo de uso redesenhado: números em cartões (músicas, ouvidas, reproduções, tempo, favoritas e artistas), ranking com barras e contagem sempre visível, gráfico de horários em toda a largura com o pico destacado, e a janela rola em telas baixas
+- Correção no resumo de uso: o artista não aparece mais duplicado no nome da música (ex.: "Dj Kantik – Dj Kantik - …") e artistas com espaço sobrando no nome não são contados separados; o nome completo aparece ao passar o mouse
+- Correção: o título de músicas com nome longo em "Tocando agora" agora quebra em até duas linhas (nome completo ao passar o mouse) em vez de ficar cortado
+- Mais leve no PC: o download automático da fila inteligente roda com prioridade mínima, a cada 5 minutos (10 em PC fraco), e não baixa com vídeo tocando nem com o notebook na bateria
+- Mais leve no PC: as animações de fundo (luzes e ondas) param quando você troca para outro programa e voltam ao clicar no app; o visualizador de "Tocando agora" também gasta menos fora de foco
+- Mais leve no PC: a abertura usa prioridade um pouco acima do normal (antes era alta) e não corta mais a memória logo depois de abrir; a atualização da biblioteca consulta o disco uma vez por arquivo (eram duas), roda com prioridade baixa e, em PC de 2 núcleos, usa só 1 para ler as informações das músicas
+- Correção: a tela travava por um instante a cada música baixada pela fila inteligente em bibliotecas grandes; agora a conferência é feita em segundo plano
+- Configurações reorganizadas em abas: Aparência, Reprodução, Fila inteligente, Biblioteca, Sistema e Dados
+- Ferramentas e opções de dados agora são linhas de cartão, com título, descrição e botão
+- Tela Sobre redesenhada: cartão com versão do app, ações de atualização em linhas e lista de componentes mais limpa
+- Janelas de confirmação e de erro no visual do app (limpar músicas automáticas, falha do VLC), no lugar das caixas do Windows
+- Instalador mais leve: o VLC agora vai sem os componentes que o player não usa (interface, Lua, transcodificação)
+- Configuração inicial em janela, no estilo do Windows, na primeira abertura e ao atualizar (estilos, artistas, idioma e quanto você quer descobrir); a fila inteligente e o YouTube usam o que você marcou. Refaça em Configurações → Fila inteligente → Seus gostos
+- A fila inteligente usa o que você marcou desde o primeiro dia e, sem histórico, as músicas novas do YouTube partem dos seus artistas e estilos
+- Correção: a música parava quando a próxima da fila era um arquivo apagado; agora o app avisa, tira da biblioteca e segue para a próxima
+- Correção: ao pular ou terminar uma música cuja próxima da biblioteca era um arquivo apagado, o app agora segue mesmo sem fila (antes parava); clicar direto num arquivo apagado só avisa e não interrompe o que está tocando
+- Correção: as músicas do lote de hora em hora podiam entrar na fila sozinhas pelo vigia de pastas; agora o lote realmente não mexe na fila
+- Correção: se a conexão caía no download do yt-dlp ou do ffmpeg, a ferramenta ficava quebrada para sempre; agora o app detecta e baixa de novo
+- Atualização automática mais segura: só instala sozinha quando o GitHub informa o código de verificação (hash) do arquivo, e o download tem limite de 20 minutos (antes uma conexão parada travava as próximas buscas)
+- Correção: a prioridade extra da abertura agora volta ao normal também em PC lento, onde a abertura passa de 20 s
+- Correção: as frases novas das traduções (inglês e espanhol) não apareciam para quem já tinha baixado idiomas antes
+- O assistente de gostos não aparece mais por cima de um arquivo aberto com "Abrir com"

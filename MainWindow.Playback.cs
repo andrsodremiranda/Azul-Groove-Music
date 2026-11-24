@@ -17,12 +17,20 @@ namespace AzulGroove
         // ---------- Reprodução ----------
         void Play(Item it)
         {
-            if (_mp == null) { pendingItem = it; NowTitle.Text = "Carregando…"; return; }
+            if (_mp == null) { pendingItem = it; NowTitle.Text = T.Get("Carregando…"); return; }
             if (!File.Exists(it.FilePath))
             {
                 lib.Remove(it); recent.Remove(it); while (queue.Remove(it)) { }
-                known.Remove(it.FilePath); itemsByPath.Remove(it.FilePath); Save(); Refresh(); RefreshQueue(); return;
+                known.Remove(it.FilePath); itemsByPath.Remove(it.FilePath); Save(); Refresh(); RefreshQueue();
+                Toast("Arquivo não encontrado: tirado da biblioteca");
+                if (!stepping) return;                                   // clicou direto num arquivo que sumiu: só avisa e a música atual continua
+                if (++missingChain > 25) { missingChain = 0; return; }   // muitos arquivos apagados em sequência: para em vez de varrer tudo de uma vez
+                if (lib.Count == 0) { missingChain = 0; return; }
+                if (ReferenceEquals(cur, it)) cur = null;                // evita repetir (modo repetir uma) o próprio arquivo que sumiu
+                StepCore(stepDir, stepAuto);                                   // segue para a próxima (fila ou biblioteca), como a nota da versão promete
+                return;
             }
+            missingChain = 0;
             queue.Remove(it);
             RefreshQueue();
             if (cur != null) cur.IsPlaying = false;
@@ -35,7 +43,7 @@ namespace AzulGroove
             if (it.IsVideo)
             {
                 // A janela de vídeo só nasce no primeiro vídeo; precisa estar pronta antes do VLC começar
-                EnsureVideoPanel(); Navigate(4); Toast(it.Name); UpdateLayout();
+                EnsureVideoPanel(); Navigate(4); ToastRaw(it.Name); UpdateLayout();
                 if (vpanel.IsHandleCreated) _mp.Hwnd = vpanel.Handle;
             }
             countItem = it.IsVideo ? null : it;   // conta como reprodução quando passar de 30 s
@@ -90,9 +98,9 @@ namespace AzulGroove
         void UpdateNow()
         {
             bool has = cur != null, v = has && cur.IsVideo;
-            NowTitle.Text = has ? cur.Name : "Nenhuma faixa";
+            NowTitle.Text = has ? cur.Name : T.Get("Nenhuma faixa");
             NowDetails.Text = has ? cur.Subtitle : string.Empty;
-            PlayerTitle.Text = NowTitle.Text; DiscLabel.Text = has ? cur.Initial : "♪";
+            PlayerTitle.Text = NowTitle.Text; PlayerTitle.ToolTip = has ? cur.Name : null; DiscLabel.Text = has ? cur.Initial : "♪";
             SetMiniArt(cur);
             MiniGlyph.Visibility = has ? Visibility.Collapsed : Visibility.Visible;
             VideoHost.Visibility = v ? Visibility.Visible : Visibility.Collapsed;
@@ -105,6 +113,7 @@ namespace AzulGroove
                 NowTitle.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(380)));
             }
             UpdateTrayText();
+            LoadLyrics(cur); UpdateFavBtn(); UpdateMini();
         }
 
         // A capa vem do arquivo (TagLib) e antes era lida aqui, na thread da tela, a cada troca de faixa: a música só começava depois disso.
@@ -119,7 +128,7 @@ namespace AzulGroove
             {
                 if (task.IsFaulted || task.IsCanceled) return;
                 Brush loaded = task.Result;
-                UI(() => { if (ReferenceEquals(cur, item)) MiniArt.Background = loaded; });
+                UI(() => { if (ReferenceEquals(cur, item)) { MiniArt.Background = loaded; UpdateMini(); } });
             });
         }
 
@@ -129,7 +138,7 @@ namespace AzulGroove
             PlayBtn.Content = pl ? "\uE769" : "\uE768";
             Spin(ringSb, ref ringOn, pl); Spin(discSb, ref discOn, pl); UpdateViz();
             if (!pl) UpdateTimeUi();
-            SyncTimer();
+            SyncTimer(); UpdateMini();
         }
 
         // O timer de 200 ms só roda com a janela visível e a mídia tocando (ou arrastando a barra)
@@ -140,10 +149,20 @@ namespace AzulGroove
             if (need != timer.IsEnabled) timer.IsEnabled = need;
         }
 
+        bool stepping, stepAuto; int stepDir = 1, missingChain;   // stepping: o Play() veio de um "próxima/anterior/fim da faixa" (e não de um clique direto)
+
         void Step(int d, bool auto = false)
         {
             if (lib.Count == 0) return;
             if (!auto && d > 0) SmartNoteSkip();   // pulou antes de contar como ouvida: aprende que não gostou
+            bool ps = stepping, pa = stepAuto; int pd = stepDir; stepping = true; stepAuto = auto; stepDir = d;
+            try { StepCore(d, auto); }
+            finally { stepping = ps; stepAuto = pa; stepDir = pd; }
+        }
+
+        void StepCore(int d, bool auto)
+        {
+            if (lib.Count == 0) return;
             if (auto && repeat == 2 && cur != null) { Play(cur); return; }
             if (d > 0 && queue.Count > 0) { Play(queue[0]); return; }
             if (shuffle)
@@ -194,13 +213,13 @@ namespace AzulGroove
             if (_mp != null && Volatile.Read(ref curTime) > 3000) { _mp.Time = 0; Volatile.Write(ref curTime, 0); if (!isPlaying) UpdateTimeUi(); }
             else Step(-1);
         }
-        void Shuf_Click(object s, RoutedEventArgs e) { shuffle = !shuffle; ShufBtn.Foreground = shuffle ? (Brush)FindResource("Cyan") : (Brush)FindResource("Foam"); ShufBtn.Background = shuffle ? ActiveBg : Brushes.Transparent; }
+        void Shuf_Click(object s, RoutedEventArgs e) { shuffle = !shuffle; SetAccentOn(ShufBtn, shuffle); SetAccentBg(ShufBtn, shuffle); }
         void Rep_Click(object s, RoutedEventArgs e)
         {
             repeat = (repeat + 1) % 3;
             RepBtn.Content = repeat == 2 ? "\uE8ED" : "\uE8EE";
-            RepBtn.Foreground = repeat > 0 ? (Brush)FindResource("Cyan") : (Brush)FindResource("Foam");
-            RepBtn.Background = repeat > 0 ? ActiveBg : Brushes.Transparent;
+            SetAccentOn(RepBtn, repeat > 0);
+            SetAccentBg(RepBtn, repeat > 0);
         }
         // ---------- Pulo, velocidade e extras ----------
         void FinishSeek()
@@ -233,7 +252,7 @@ namespace AzulGroove
             foreach (Button b in SpdGrid.Children)
             {
                 bool on = Math.Abs((float)b.Tag - speed) < 0.01f;
-                b.Foreground = (Brush)FindResource(on ? "Cyan" : "Foam"); b.FontWeight = on ? FontWeights.Bold : FontWeights.Normal;
+                SetAccentOn(b, on); b.FontWeight = on ? FontWeights.Bold : FontWeights.Normal;
             }
         }
         // O VLC trava um instante ao trocar a velocidade; fora da thread da tela a interface não congela
@@ -253,7 +272,7 @@ namespace AzulGroove
             aspIdx = (aspIdx + 1) % AspVal.Length;
             try { _mp.AspectRatio = AspVal[aspIdx]; }
             catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Could not set video aspect ratio: " + ex.Message); }
-            AspectTxt.Text = "Proporção da tela: " + AspName[aspIdx]; Toast("Proporção " + AspName[aspIdx]);
+            AspectTxt.Text = T.Get("Proporção da tela: {0}", T.Get(AspName[aspIdx])); Toast(T.Get("Proporção {0}", T.Get(AspName[aspIdx])));
         }
         void Sub_Click(object s, RoutedEventArgs e) { MorePop.IsOpen = false; CycleTrack(true); }
         void Audio_Click(object s, RoutedEventArgs e) { MorePop.IsOpen = false; CycleTrack(false); }
@@ -268,7 +287,15 @@ namespace AzulGroove
             Toast((sub ? "Legenda: " : "Áudio: ") + n.Name);
         }
 
-        void Toast(string t) { ToastTxt.Text = t; ToastPop.IsOpen = true; toastTimer.Stop(); toastTimer.Start(); }
+        // O aviso é uma janela flutuante do Windows (precisa ficar por cima do vídeo). Por isso só aparece com o app em primeiro plano:
+        // se você trocar para outro programa (ex.: navegador), ele some, em vez de ficar por cima dele.
+        void Toast(string t) => ToastRaw(T.Get(t));
+        void ToastRaw(string t)
+        {
+            if (!IsActive || WindowState == WindowState.Minimized || !IsVisible) { ToastPop.IsOpen = false; return; }
+            if (ToastPop.Child != null) ToastPop.Child.Opacity = 1;   // o aquecimento (WarmPopups) deixa o filho invisível
+            ToastTxt.Text = t; ToastPop.IsOpen = true; toastTimer.Stop(); toastTimer.Start();
+        }
 
         // Controles somem sozinhos em tela cheia
         void Moved()
@@ -315,6 +342,7 @@ namespace AzulGroove
             if (full && cur != null && cur.IsVideo && isPlaying && Bar.Visibility == Visibility.Visible && (DateTime.Now - lastMove).TotalSeconds > 3) HideBar();
             UpdateViz();
             UpdateTimeUi();
+            FadeTick();
         }
 
         // Lê o tempo guardado pelos eventos do VLC (sem chamar o player)
@@ -324,6 +352,7 @@ namespace AzulGroove
             long len = Volatile.Read(ref curLen), t = Volatile.Read(ref curTime);
             if (!dragging) { if (len > 0) { Seek.Maximum = len; Seek.Value = t; } CurT.Text = Fmt(t); }
             DurT.Text = Fmt(len);
+            if (lyr != null) UpdateLyricUi(t);
             if (cur.IsVideo && ChipRes.Visibility != Visibility.Visible)
             {
                 uint w = 0, h = 0;

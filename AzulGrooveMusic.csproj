@@ -19,7 +19,7 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <DebugType>none</DebugType>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Version>1.0.4</Version>
+    <Version>1.0.6</Version>
     <Product>Azul Groove Music</Product>
     <Company>ASTM Software</Company>
     <ServerGarbageCollector>false</ServerGarbageCollector>
@@ -30,6 +30,7 @@
   <ItemGroup>
     <Resource Include="icon.ico" />
     <EmbeddedResource Include="LICENSE.txt" LogicalName="LICENSE.txt" />
+    <EmbeddedResource Include="idiomas\*.json" LogicalName="idiomas.%(Filename)%(Extension)" />
     <EmbeddedResource Include="libvlc.zip" LogicalName="libvlc.zip" Condition="'$(EmbedLibVlc)'=='true' And Exists('libvlc.zip')" />
   </ItemGroup>
   <ItemGroup>
@@ -38,4 +39,42 @@
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
     <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
+  <!-- Tira do VLC o que o player não usa (interface Qt, Lua, streaming/transcodificação, visualizações...).
+       Roda depois do publish, então vale para a pasta publish, para o instalador e para o EXE portátil.
+       O plugins.dat (cache de plugins) é apagado para o VLC refazer o índice na primeira abertura. -->
+  <Target Name="PruneLibVlc" AfterTargets="Publish">
+    <PropertyGroup>
+      <VlcRoot>$(PublishDir)libvlc\win-x64\</VlcRoot>
+    </PropertyGroup>
+    <ItemGroup>
+      <VlcDrop Include="$(VlcRoot)lua" />
+      <VlcDrop Include="$(VlcRoot)hrtfs" />
+      <VlcDrop Include="$(VlcRoot)locale" />
+      <VlcDrop Include="$(VlcRoot)plugins\gui" />
+      <VlcDrop Include="$(VlcRoot)plugins\lua" />
+      <VlcDrop Include="$(VlcRoot)plugins\services_discovery" />
+      <VlcDrop Include="$(VlcRoot)plugins\stream_out" />
+      <VlcDrop Include="$(VlcRoot)plugins\visualization" />
+      <VlcDrop Include="$(VlcRoot)plugins\control" />
+      <VlcDrop Include="$(VlcRoot)plugins\meta_engine" />
+      <VlcDrop Include="$(VlcRoot)plugins\mux" />
+      <VlcDrop Include="$(VlcRoot)plugins\access_output" />
+      <VlcDrop Include="$(VlcRoot)plugins\video_splitter" />
+    </ItemGroup>
+    <!-- Codificadores e extras que só servem para gravar/transcodificar ou tocar MIDI/teletexto (o player só reproduz) -->
+    <ItemGroup>
+      <VlcDropFiles Include="$(VlcRoot)plugins\codec\libx264*.dll" />
+      <VlcDropFiles Include="$(VlcRoot)plugins\codec\libx265*.dll" />
+      <VlcDropFiles Include="$(VlcRoot)plugins\codec\libshine*.dll" />
+      <VlcDropFiles Include="$(VlcRoot)plugins\codec\libtwolame*.dll" />
+      <VlcDropFiles Include="$(VlcRoot)plugins\codec\libfluidsynth*.dll" />
+      <VlcDropFiles Include="$(VlcRoot)plugins\codec\libzvbi*.dll" />
+      <VlcDropFiles Include="$(VlcRoot)plugins\codec\libschroedinger*.dll" />
+      <VlcDropFiles Include="$(VlcRoot)plugins\codec\libtelx*.dll" />
+      <VlcDropFiles Include="$(VlcRoot)plugins\codec\libcvdsub*.dll" />
+    </ItemGroup>
+    <Delete Files="@(VlcDropFiles)" />
+    <RemoveDir Directories="@(VlcDrop)" Condition="Exists('$(VlcRoot)')" />
+    <Delete Files="$(VlcRoot)plugins\plugins.dat" Condition="Exists('$(VlcRoot)plugins\plugins.dat')" />
+  </Target>
 </Project>
